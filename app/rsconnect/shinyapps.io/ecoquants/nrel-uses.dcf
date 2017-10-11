@@ -1,0 +1,12 @@
+name: nrel-uses
+title: nrel-uses
+username:
+account: ecoquants
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 224283
+bundleId: 1022241
+url: https://ecoquants.shinyapps.io/nrel-uses/
+when: 1507758485.9611
+asMultiple: FALSE
+asStatic: FALSE

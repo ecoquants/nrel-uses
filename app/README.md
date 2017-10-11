@@ -4,7 +4,7 @@ A [Shiny](http://shiny.rstudio.com/) app will be created in this folder that pro
 
 You can find this app here:
 
-...
+[ecoquants.shiny.io/nrel-uses](https://ecoquants.shinyapps.io/nrel-uses/)
 
 Files hosted here can also be directly run from a local desktop instance of the [R]() statistical programming language:
 
