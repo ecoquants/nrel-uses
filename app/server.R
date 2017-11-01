@@ -6,7 +6,7 @@ shinyServer(function(input, output, session) {
     if (input$select_layer=='score'){
       r = score
       r[r==0] = NA
-      title = 'Ocean Use Score'
+      title = 'Competing Use Score'
     } else {
       #browser()
       tif = input$select_layer

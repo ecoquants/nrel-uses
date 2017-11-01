@@ -1,6 +1,7 @@
 # load packages
 library(tidyverse)
 library(stringr)
+library(rgdal)
 library(raster)
 library(leaflet)
 library(shiny)
@@ -31,8 +32,8 @@ list_constraints      = list(
     `Depth_m`         = 'depth/West_depth.tif'),
   `Energy`            = c(
     `Wind (m/s)`      = 'wind/West_90mwindspeed.tif'),
-  `Ocean Uses`        = c(
-    `Ocean Use Score` = 'score'))
+  `Competing Uses`        = c(
+    `Competing Use Score` = 'score'))
 
 list_uses = list(
   `Infrastructure`            = c(
