@@ -1,7 +1,7 @@
 dashboardPage(
-  title = 'Competing Uses for Marine Renewable Energy',
+  title = 'Competing Uses with Marine Renewable Energy',
   dashboardHeader(
-    title=tagList(icon('bolt'), 'Competing Uses for Marine Renewable Energy'),
+    title=tagList(icon('bolt'), 'Competing Uses with Marine Renewable Energy'),
     titleWidth = 450),
   dashboardSidebar(
     width = 250,
