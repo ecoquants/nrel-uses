@@ -37,7 +37,7 @@ dashboardPage(
         choices = list_uses,
         selected = 1),
       sliderInput(
-        'slider_weight', label=h4('Weight'),
+        'slider_weight', label=h4('Apply Weight'),
         min=0, max=max_weight, value=max_weight))),
   
   # body ----

@@ -1,14 +1,16 @@
 # load packages
 library(tidyverse)
+library(stringr)
+library(raster)
 library(leaflet)
 library(shiny)
 library(shinydashboard)
-library(stringr)
+select = dplyr::select
 
 # debug ----
 # https://shiny.rstudio.com/reference/shiny/latest/shiny-options.html
 options(
-  shiny.sanitize.errors = F, shiny.autoreload=T,
+  shiny.sanitize.errors = F, shiny.autoreload=F,
   shiny.fullstacktrace=F, shiny.stacktraceoffset=T,
   shiny.trace=F, shiny.testmode=F, shiny.minified=T,
   shiny.deprecation.messages=T,
