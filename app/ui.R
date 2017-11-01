@@ -9,7 +9,7 @@ dashboardPage(
     sidebarMenu(
       id = 'menu',
       menuItem(
-        tagList(h3(icon('gears'), 'Constraints')), tabName = 'constraints', selected=T, startExpanded=T),
+        tagList(h3(icon('gears'), 'Parameters')), tabName = 'constraints', selected=T, startExpanded=T),
       menuItem(
         tagList(h3(icon('flag'), 'Competing Uses')), tabName = 'uses')),
     
@@ -21,6 +21,7 @@ dashboardPage(
       style = "background-color: #1e282c;", width=12,
       conditionalPanel(
         condition = "input.menu != 'uses'",
+        'Parameters constraining viable renewable energy:',
         sliderInput(
           'slider_depth', label=h4('Depth (m)'),
           min=0, max=1000, value=c(0,100)),
@@ -34,6 +35,7 @@ dashboardPage(
       # uses conditional ----
       conditionalPanel(
         condition = "input.menu == 'uses'",
+        'Competing uses to weight and score:',
         selectInput(
           'select_use', label = h4('Select Use'), 
           choices = list_uses,
