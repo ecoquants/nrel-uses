@@ -1,26 +1,44 @@
-#
-# This is the server logic of a Shiny web application. You can run the 
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
-
-library(shiny)
-
-# Define server logic required to draw a histogram
-shinyServer(function(input, output) {
-   
-  output$distPlot <- renderPlot({
+shinyServer(function(input, output, session) {
+  
+  # map ----
+  output$map <- renderLeaflet({
     
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2] 
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    if (input$select_layer=='score'){
+      r = score
+      r[r==0] = NA
+      title = 'Ocean Use Score'
+    } else {
+      #browser()
+      tif = input$select_layer
+      lyr = str_replace(tif, '.*/(.*)\\.tif$', '\\1')
+      r = s_layers[[lyr]]
+      title = names(unlist(list_layers))[unlist(list_layers)==tif] %>%
+        str_replace('^.*\\.(.*)','\\1')
+    }
     
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    #browser()
+    if (minValue(r) == maxValue(r)){
+      #pal = 'red'
+      #browser() 
+      vals = c(0,1,NA) # unique(getValues(r)) showing 4 1's?
+      pal = colorFactor(
+        palette = 'Reds',
+        domain  = vals, na.color="#00000000")
+      vals = c(1,NA)
+    } else {
+      vals = getValues(r)
+      pal = colorNumeric(
+        palette = 'Spectral', reverse=T,
+        domain  = vals, na.color="#00000000")
+    }
+    
+    leaflet() %>%
+      addProviderTiles('Stamen.TonerLite', group = 'B&W') %>%
+      addRasterImage(
+        r, project=T,
+        colors=pal, opacity=0.8) %>%
+      addLegend('bottomright', pal, vals, title=title, opacity=0.8) %>%
+      addScaleBar('bottomleft')
     
   })
-  
 })
