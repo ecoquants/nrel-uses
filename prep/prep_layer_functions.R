@@ -13,10 +13,7 @@ library(rgdal)
 select <- dplyr::select
 
 # paths ----
-depth_nc <- "/Users/bbest/github/obis-lat-time-fig/data/GEBCO_2014_2D.nc"
-#eez_wgcs_geo <- "eez/usa__simplify05.geojson" # eez_usa_regions.geojson, usa_rgn.geojson
-#file.copy("~/github/nrel-cables/data/usa_rgn_simplify05.geojson", )
-#file.copy(, "eez/usa_ter_wgcs.geojson")
+depth_nc         <- "/Users/bbest/github/obis-lat-time-fig/data/GEBCO_2014_2D.nc"
 eez_wgcs_geo     <- "eez/usa_ter_wgcs.geojson"
 eez_gcs_geo      <- "eez/usa_ter_gcs.geojson"
 eez_s05_wgcs_geo <- "eez/usa_ter_simplify05_wgcs.geojson"
@@ -81,13 +78,13 @@ if (!file.exists(eez_wgcs_geo)){
   write_sf(eez_s05_gcs_sf , eez_s05_gcs_geo , delete_dsn = T)
 }
 
-# ter_depth_wgcs_sf ----
+# depth & eez functions for regional analysis ----
+
 get_ter_eez_wgcs_sf <- function(ter){
   read_sf(eez_wgcs_geo) %>% 
     filter(territory==ter)
 }
 
-# ter_depth_wgcs_r ----
 get_ter_depth_wgcs_r <- function(ter){
   
   dir.create("./depth", showWarnings=F)
@@ -128,7 +125,8 @@ get_ter_depth_wgcs_r <- function(ter){
   ter_depth_wgcs <- raster(ter_depth_wgcs_tif)
 }
 
-# efh ----
+# layer polygon modification functions ----
+
 efh_ply_mod <- function(ply){
   # habitat areas of particular concern (HAPC)
   # http://www.habitat.noaa.gov/protection/efh/newInv/index.html
@@ -162,10 +160,49 @@ efh_ply_mod <- function(ply){
   
 }
 
-# mpa ----
-mpa_ply_mod = function(ply){
+mpa_ply_mod <- function(ply){
   ply <- ply %>%
     mutate(
       layer = ifelse(State %in% state.name, "State MPA", State))
   ply
 }
+
+shippinglanes_ply_mod <- function(ply){
+
+  #cat(paste(sort(unique(ply$THEMELAYER)), collapse="", ""))
+  vals_excluded <- c("Area to be Avoided", "Particularly Sensitive Sea Area", "Precautionary Areas", "Speed Restrictions/Right Whales","Traffic Separation Schemes")
+  # TODO: use vals_excluded, esp sensitive / precautionary / right whale areas, as alternate ocean use critera?
+  vals_included <- c("Recommended Routes", "Shipping Fairways Lanes and Zones", "Traffic Separation Schemes/Traffic Lanes")
+  # check geometries: table(st_geometry_type(ply$geometry)) # POLYGON
+  
+  if (nrow(ply) == 0) return(ply)
+  
+  #if (ter == "Hawaii") browser()
+  
+  # check future datasets for new values not in set of actively excluded or included to flag
+  ply_unaccounted_THEMELAYER <- ply %>%
+    filter(!ply$THEMELAYER %in% c(vals_included, vals_excluded)) %>%
+    .$THEMELAYER %>% unique()
+  if (length(ply_unaccounted_THEMELAYER) > 0) stop(glue("MISSING THEMELAYER in shippinlanes: {paste(ply_unaccounted_THEMELAYER, collapse=', '}"))
+  
+  ply <- ply %>%
+    filter(THEMELAYER %in% vals_included)
+  
+  if (nrow(ply) == 0) return(ply)
+  
+  ply <- ply %>%
+    mutate(
+      one = 1) %>%
+    group_by(one) %>%
+    summarize(
+      n = n())
+  ply
+}
+
+
+# wind ---
+"/Volumes/Best HD/nrel_data_big/nrel.gov/wind/pac/pacific_coast_90mwindspeed_off.shp
+/Volumes/Best HD/nrel_data_big/nrel.gov/wind/hi/HI_90mwindspeed_off.shp
+/Volumes/Best HD/nrel_data_big/nrel.gov/wind/gom/gulf_of_mexico_90mwindspeed_off.shp
+/Volumes/Best HD/nrel_data_big/nrel.gov/wind/gl/great_lakes_90mwindspeed_off.shp
+/Volumes/Best HD/nrel_data_big/nrel.gov/wind/atl/atlantic_coast_90mwindspeed_off.shp"

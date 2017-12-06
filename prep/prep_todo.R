@@ -90,18 +90,6 @@ system.time({
   
 })
 
-# shippinglanes ----
-shp <- "/Volumes/Best HD/nrel_data_big/marinecadastre.gov/Shipping Lanes and Regulations/shippinglanes_dir/shippinglanes.shp"
-ply <- read_sf(shp)
-cat(paste(sort(unique(ply$THEMELAYER)), collapse="", ""))
-
-vals_excluded <- c("Area to be Avoided", "Particularly Sensitive Sea Area", "Precautionary Areas", "Speed Restrictions/Right Whales","Traffic Separation Schemes")
-# TODO: use vals_excluded, esp sensitive / precautionary / right whale areas, as alternate ocean use critera?
-# TODO: check future datasets for new values not in set of actively excluded or included to flag
-vals_included <- c("Recommended Routes", "Shipping Fairways Lanes and Zones", "Traffic Separation Schemes/Traffic Lanes")
-
-# THEMELAYER %in% c()
-# TODO: THEMELAYER %in% c()
 
 
 # TODO: constraints & uses ----

@@ -11,7 +11,7 @@ params <- read_csv('~/github/nrel-uses/prep/prep_params.csv') %>%
   filter(!is.na(run))
 
 # loop params ----
-for (i in 1:nrow(params)){ # i <- 2
+for (i in 1:nrow(params)){ # i <- 3
   p <- params[i,]
   if (!p$run) next
   cat(glue("{i}: {p$key}"),"\n")
@@ -21,23 +21,19 @@ for (i in 1:nrow(params)){ # i <- 2
     cat(glue("  {j}: {ter}"),"\n")
     
     digest_txt <- glue("./{p$key}/{ter}_{p$key}_epsg4326.txt")
-    if (!file.exists(digest_txt)){
+    if (!file.exists(digest_txt) | p$redo){
       
       # get eez and depth
       ter_eez_wgcs_sf  <- get_ter_eez_wgcs_sf(ter)  # ply_map(ter_eez_wgcs_sf, "territory")
       ter_depth_wgcs_r <- get_ter_depth_wgcs_r(ter) # r_map(ter_depth_wgcs_r)
       
-      # read path
-      ply <- read_sf(p$path)
-      
       # wrap and intersect with eez
-      ply <- sf_wrap_intersection(ply, ter_eez_wgcs_sf)
+      ply <- sf_wrap_intersection(p$paths, ter_eez_wgcs_sf)
       
       # modify as needed
       if (!is.na(p$mod_eval)){
         ply <- eval(parse(text=p$mod_eval))
-      }
-      # ply_map(ply)
+      } # ply_map(ply)
       
       # convert to raster tifs
       ply_to_tifs(ply, ter_depth_wgcs_r, ter, p$key, field=p$field, by=p$by)
