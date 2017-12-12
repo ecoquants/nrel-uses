@@ -186,9 +186,9 @@ hdr = withTags(table(
       th("Category"),
       th("Layer"),
       th("Component"),
-      th("0-100"),
-      th("100-200"),
-      th("200-1,000"),
+      th("0-100m"),
+      th("100-200m"),
+      th("200-1,000m"),
       th("Total"),
       th("Rank")))))
 
@@ -219,13 +219,13 @@ tbl_d %>%
       ordering=F,
       autoWidth = TRUE,
       columnDefs = list(
-        list(width     = '75px'   , targets = 3:6),
+        list(width     = '80px'   , targets = 3:6),
         list(className = 'dt-right', targets = 3:7))))
 ```
 
 ## Plot
 
-```{r figTerDepth, fig.cap="Area of Cumulative Ocean Use by Depth Bin for West region. Cumulative use are counted and summarized by depth bin and area.", eval=T}
+```{r figTerDepth, fig.cap="Area of Cumulative Ocean Use by Depth Bin for West region. Cumulative use are counted and summarized by depth bin and area. Rank sorts from highest (Total Area of depth bin) to smallest Total area occupied for each layer.", eval=T}
 # table of depth for figure
 tbl_df <- tbl_s %>%
   mutate(
@@ -287,7 +287,7 @@ leaflet(
 
 TODO:
 
-- contours of depth bins for Figure 3
+- contours of depth bins for map.
 
 - zoom in for West (NOTE: 2x-clicking on html zooms)
 
