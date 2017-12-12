@@ -1,0 +1,31 @@
+---
+title: "Prep Notes"
+author: "Ben Best"
+date: "December 10, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# General
+
+- Alternative to raster approach: summarize by "BOEM Block Aliquots", except only for West & East territories.
+
+TODO:
+- fetch latest from MarineCadastre and merge into `data/categories_and_datasets.xlsx`.
+
+# Layers
+
+## `efh`
+
+TODO:
+- categorize sublayers for other territories besides West & Alaska.
+
+## `shippinglanes`
+
+- Not as comprehensive as B&V. See PILE graphic vs MarineCadastre.
+
+## BOEM Block Aliquots
+

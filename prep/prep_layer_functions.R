@@ -11,8 +11,10 @@ library(fasterize)
 library(rgdal)
 #library(mapview)
 select <- dplyr::select
+devtools::load_all("~/github/nrelutils") # devtools::install_github("ecoquants/nrelutils"); library(nrelutils) 
 
 # paths ----
+setwd("~/github/nrel-uses/prep/data")
 depth_nc         <- "/Users/bbest/github/obis-lat-time-fig/data/GEBCO_2014_2D.nc"
 eez_wgcs_geo     <- "eez/usa_ter_wgcs.geojson"
 eez_gcs_geo      <- "eez/usa_ter_gcs.geojson"
@@ -85,6 +87,16 @@ get_ter_eez_wgcs_sf <- function(ter){
     filter(territory==ter)
 }
 
+if (F){
+  # TODO: cleanup this quick fix, genericize fxn for digest_txt with nrelutils::ply_to_tifs()
+  p <- list(key = "depth")
+  for (ter in eez_wgcs_sf$territory){
+    digest_txt <- glue("./{p$key}/{ter}_{p$key}_epsg4326.txt")
+    tif        <- glue("{ter}_{p$key}_epsg4326.tif")
+    write_lines(glue("depth:{tif}"), digest_txt)
+  }
+}
+
 get_ter_depth_wgcs_r <- function(ter){
   
   dir.create("./depth", showWarnings=F)
@@ -93,7 +105,7 @@ get_ter_depth_wgcs_r <- function(ter){
   if (!file.exists(ter_depth_wgcs_tif)){
     cat("    creating", ter_depth_wgcs_tif, "\n")
     
-    depth_wgcs_tif <- "depth/depth_epsg4326.tif"
+    depth_wgcs_tif <- "depth/_depth_epsg4326.tif"
     if (!file.exists(depth_wgcs_tif)){
       cat("    creating", depth_wgcs_tif, "\n")
       
@@ -105,8 +117,8 @@ get_ter_depth_wgcs_r <- function(ter){
       depth_wgcs <- raster(depth_wgcs_tif)
     }
     
-    ter_eez_wgcs_r <- fasterize(ter_eez_wgcs_sf, depth_wgcs) %>% trim()
-
+    ter_eez_wgcs_sf <- get_ter_eez_wgcs_sf(ter) # plot(ter_eez_wgcs_sf["territory"])
+    ter_eez_wgcs_r <- fasterize(ter_eez_wgcs_sf, depth_wgcs) %>% trim() # plot(ter_eez_wgcs_r); plot(ter_eez_wgcs_sf["territory"], add=T) 
     ter_depth_wgcs <- raster_clip(depth_wgcs, ter_eez_wgcs_r) # plot(ter_depth_wgcs)
     ter_depth_wgcs[ter_depth_wgcs < 0] <- NA
     ter_depth_wgcs <- trim(ter_depth_wgcs)
@@ -123,6 +135,9 @@ get_ter_depth_wgcs_r <- function(ter){
     #depth <- projectRaster(depth_gcs, crs=leaflet:::epsg3857, res=res_km*1000)
   }
   ter_depth_wgcs <- raster(ter_depth_wgcs_tif)
+  #browser()
+  
+  ter_depth_wgcs # plot(ter_depth_wgcs)
 }
 
 # layer polygon modification functions ----
@@ -136,10 +151,11 @@ efh_ply_mod <- function(ply){
   if (ter=="West"){ 
     ply <- ply %>%
       mutate(
-        layer = ifelse(Species == "Groundfish", "Groundfish", HAPC_Sitename))
+        layer = ifelse(species == "Groundfish", "Groundfish", hapc_sitename))
   }
   if (ter=="Alaska"){
-    v <- ply$HAPC_Sitename
+    #browser()
+    v <- ply$hapc_sitename
     habs <- c("Seamount", "Coral", "Slope", "Skate", "Bowers")
     for (h in habs){
       v <- ifelse(str_detect(v, h), h, v)
@@ -163,13 +179,13 @@ efh_ply_mod <- function(ply){
 mpa_ply_mod <- function(ply){
   ply <- ply %>%
     mutate(
-      layer = ifelse(State %in% state.name, "State MPA", State))
+      layer = ifelse(state %in% state.name, "State MPA", state))
   ply
 }
 
 shippinglanes_ply_mod <- function(ply){
 
-  #cat(paste(sort(unique(ply$THEMELAYER)), collapse="", ""))
+  #cat(paste(sort(unique(ply$themelayer)), collapse="", ""))
   vals_excluded <- c("Area to be Avoided", "Particularly Sensitive Sea Area", "Precautionary Areas", "Speed Restrictions/Right Whales","Traffic Separation Schemes")
   # TODO: use vals_excluded, esp sensitive / precautionary / right whale areas, as alternate ocean use critera?
   vals_included <- c("Recommended Routes", "Shipping Fairways Lanes and Zones", "Traffic Separation Schemes/Traffic Lanes")
@@ -180,13 +196,13 @@ shippinglanes_ply_mod <- function(ply){
   #if (ter == "Hawaii") browser()
   
   # check future datasets for new values not in set of actively excluded or included to flag
-  ply_unaccounted_THEMELAYER <- ply %>%
-    filter(!ply$THEMELAYER %in% c(vals_included, vals_excluded)) %>%
-    .$THEMELAYER %>% unique()
-  if (length(ply_unaccounted_THEMELAYER) > 0) stop(glue("MISSING THEMELAYER in shippinlanes: {paste(ply_unaccounted_THEMELAYER, collapse=', '}"))
+  ply_unaccounted_themelayer <- ply %>%
+    filter(!ply$themelayer %in% c(vals_included, vals_excluded)) %>%
+    .$themelayer %>% unique()
+  if (length(ply_unaccounted_themelayer) > 0) stop(glue("MISSING themelayer in shippinlanes: {paste(ply_unaccounted_themelayer, collapse=', '}"))
   
   ply <- ply %>%
-    filter(THEMELAYER %in% vals_included)
+    filter(themelayer %in% vals_included)
   
   if (nrow(ply) == 0) return(ply)
   

@@ -1,0 +1,364 @@
+---
+title: "Preliminary Results for West Region by Depth"
+author: "Ben Best"
+date: |
+  | `r format(Sys.time(), '%Y-%m-%d')`
+output:
+  pdf_document:
+    fig_caption: yes
+    keep_tex: yes
+    toc: yes
+  bookdown::word_document2:
+    toc: yes
+    toc_depth: 4
+  html_document:
+    toc: yes
+    toc_depth: '4'
+  bookdown::html_document2:
+    self_contained: no
+    toc: yes
+    toc_float: yes
+---
+
+Here are preliminary results to be output for each of the 8 regions: 
+
+1. Alaska
+1. Atlantic Islands
+1. East
+1. Great Lakes
+1. Gulf of Mexico
+1. Hawaii
+1. Pacific Islands
+1. West
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(knitr)
+library(rmarkdown)
+library(bookdown)
+library(glue)
+library(raster)
+#library(tabularaster)
+library(formattable)
+library(htmltools)
+#library(kableExtra)
+library(DT)
+library(leaflet)
+devtools::load_all("~/github/nrelutils") # devtools::install_github("ecoquants/nrelutils"); library(nrelutils) 
+select <- dplyr::select
+
+knitr::opts_chunk$set(warning=F, message=F, eval=T, echo=F, cache=F) # DEBUG
+#knitr::opts_chunk$set(echo=F) # DEBUG
+```
+
+## Table
+
+```{r tblTerDepth, eval=T}
+setwd("~/github/nrel-uses/prep")
+
+tbl_cat <- readxl::read_xlsx("~/github/nrel-uses/data/categories_and_datasets.xlsx", sheet="datasets")
+
+params <- suppressMessages(read_csv('./prep_params.csv'))
+#keys_resource <- c("wind", "wave", "tide")
+#keys <- setdiff(params$key, keys_resource)
+keys <- sort(params$key)
+
+# TODO: for (ter in territories){...}
+ter <- "West" # "Alaska"
+
+if (exists("s")) rm(s)
+for (key in keys){ # key <- "mpa" # keys[1] "efh" mpa" "wind"
+  #cat(glue("{key}"),"\n")
+
+  digest_txt <- glue("./data/{key}/{ter}_{key}_epsg4326.txt")
+  
+  if (suppressMessages(read_lines(digest_txt)[1]) == "0"){
+    #cat(glue("  0, skipping"),"\n")
+    next
+  }
+  
+  df <- suppressMessages(read_delim(digest_txt, ":", col_names = c("name","path"))) %>%
+    mutate(
+      name = ifelse(name == key, name, glue("{key}_{name}")),
+      #name = glue("{key}_{name}"),
+      path = glue("./data/{key}/{path}"))
+  s1 <- stack(as.list(df$path))
+  names(s1) <- df$name
+  
+  #cat(" ", paste0(df$name, collapse="\n  "),"\n")
+
+  if (!exists("s")){
+    s <- s1
+  } else {
+    s <- stack(s, s1)
+  }
+}
+
+# add area
+s <- stack(s, raster::area(s))
+names(s)[nlayers(s)] <- "area_km2"
+
+tbl_s <- as.data.frame(s) %>% 
+  as_tibble() # 3,241,056 rows for West
+
+# table by depth ----
+
+breaks_depth <- c(0, 100, 200, 1000)
+# TODO: inland sliver pixels outside EEZ?, eg WA
+lyrs_rm <- c("depth", "wind")
+
+svg_bar <- function(pct, val){
+  pct <- ifelse(is.na(pct), 0, round(pct * 100, 3))
+  #cat("val before", val,"\n")
+  val <- ifelse(is.na(val), "0", as.character(comma(val, digits = 0)))
+  #cat("val after", val,"\n")
+  glue('
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="14px" preserveAspectRatio="xMaxYMin meet">
+  <g>
+    <rect width="{pct}%" height="16" fill="DarkGray"></rect>
+    <text text-anchor="end" x="100%" y="12">{val}</text>
+  </g>
+</svg>
+')
+  # <text text-anchor="end" x="100%" y="11" font-family="Courier New" font-size="14px" color="black">{val}</text>
+}
+
+# depth total
+tbl_dt <- tbl_s %>%
+  mutate(
+    depth_cat = cut(depth, breaks_depth, labels = c("Low", "Medium", "High"), include.lowest = T)) %>% 
+  filter(
+    !is.na(depth_cat)) %>% 
+  group_by(depth_cat) %>%
+  summarise(
+    area_km2 = sum(area_km2)) %>%
+  spread(depth_cat, area_km2) %>%
+  mutate(
+    Total = sum(Low, Medium, High, na.rm=T))
+tbl_dtc <- tbl_dt
+names(tbl_dtc) <- glue("{names(tbl_dtc)}_ALL")
+
+# depth
+tbl_d <- tibble(
+  key      = "depth",
+  title    = "Total Area",
+  sublayer = "") %>%
+  bind_cols(tbl_dt) %>%
+  bind_rows(
+    tbl_s %>%
+      mutate(
+        depth_cat = cut(depth, breaks_depth, labels = c("Low", "Medium", "High"), include.lowest = T)) %>%
+      filter(
+        !is.na(depth_cat)) %>% 
+      select(-one_of(lyrs_rm)) %>%
+      gather(key = layer, value = value, -depth_cat, -area_km2) %>%
+      filter(!is.na(value)) %>%
+      group_by(layer, depth_cat) %>%
+      summarise(
+        area_km2 = sum(area_km2)) %>%
+      spread(depth_cat, area_km2) %>%
+      rowwise() %>%
+      mutate(
+        Total = sum(Low, Medium, High, na.rm=T)) %>%
+      mutate(
+        key      = str_replace(layer, "(.*)_(.*)", "\\1"),
+        sublayer = ifelse(
+          key == layer, "",
+          str_replace(layer, "(.*)_(.*)", "\\2") %>% str_replace_all("\\.", " "))) %>%
+      left_join(
+        params %>%
+          select(key, title), 
+        by = "key")) %>%
+  cbind(tbl_dtc) %>%
+  mutate(
+    Low_svg    = map2_chr(Low    / Low_ALL   , Low   , svg_bar),
+    Medium_svg = map2_chr(Medium / Medium_ALL, Medium, svg_bar),
+    High_svg   = map2_chr(High   / High_ALL  , High  , svg_bar),
+    Total_svg  = map2_chr(Total  / Total_ALL , Total , svg_bar))
+
+hdr = withTags(table(
+  class = "display",
+  thead(
+    tr(
+      th(colspan=3, "Ocean Use"),
+      th(colspan=5, HTML("Area (km<sup>2</sup>) by Depth (m)"))),
+    tr(
+      th("Category"),
+      th("Layer"),
+      th("Component"),
+      th("0-100"),
+      th("100-200"),
+      th("200-1,000"),
+      th("Total"),
+      th("Rank")))))
+
+i_tbl <- 1
+caption <- HTML(glue('Table {i_tbl}: Area of Ocean Use (km<sup>2</sup>) by Depth bin (m) for {ter} region. Width of gray horizontal bars from left of cell indicate percent area occupied in given depth bin.'))
+
+tbl_d %>%
+  left_join(
+    tbl_cat %>%
+      select(key, use), 
+    by="key") %>%
+  arrange(use, title, sublayer) %>%
+  mutate(
+    rank = dense_rank(1/Total)) %>%
+  select(
+    Category  = use, 
+    Layer     = title, Sublayer = sublayer, 
+    `0 - 100` = Low_svg, `100 - 200` = Medium_svg, `200 - 1,000` = High_svg, Total = Total_svg,
+    Rank      = rank) %>%
+  datatable(
+    escape    = F,
+    rownames  = F,    
+    container = hdr,
+    caption   = caption,
+    options   = list(
+      dom='t',
+      pageLength = nrow(tbl_d), 
+      ordering=F,
+      autoWidth = TRUE,
+      columnDefs = list(
+        list(width     = '75px'   , targets = 3:6),
+        list(className = 'dt-right', targets = 3:7))))
+```
+
+## Plot
+
+```{r figTerDepth, fig.cap="Area of Cumulative Ocean Use by Depth Bin for West region. Cumulative use are counted and summarized by depth bin and area.", eval=F}
+# table of depth for figure
+tbl_df <- tbl_s %>%
+  mutate(
+    depth_cat = cut(depth, breaks_depth, labels = c("0-100", "100-200", "200-1,000"), include.lowest = T)) %>% 
+  filter(
+    !is.na(depth_cat))
+cols_tally <- setdiff(names(tbl_df), c("depth", "depth_cat", "wind", "area_km2"))
+tbl_df$tally <- apply(tbl_df[, cols_tally], 1, function(x) sum(!is.na(x)))
+tbl_df2 <- tbl_df %>%
+  group_by(depth_cat, tally) %>%
+  summarise(
+    area_km2 = sum(area_km2)) %>%
+  #ungroup() %>%
+  #mutate(
+  #  depth_cat = as.character(depth_cat)) %>%
+  # bind_rows(
+  #   tbl_df %>%
+  #     mutate(
+  #       depth_cat = "All") %>%
+  #     group_by(depth_cat, tally) %>%
+  #     summarise(
+  #       area_km2 = sum(area_km2))) %>%
+  filter(tally>0)
+#View(tbl_df2)
+
+ggplot(data = tbl_df2, aes(x = depth_cat, y = area_km2, fill = tally)) + 
+  geom_col() +
+  scale_fill_distiller(palette = "Spectral", name="Count") +
+  labs(x = "Depth (m)", y = expression(Area (km^2)))
+```
+
+## Map
+
+```{r mapTerDepth, fig.cap='Map of cumulative ocean use in West region.', eval=F}
+#names(s)
+lyrs_rm <- c("depth","wind","area_km2")
+s_cnt <- dropLayer(s, which(names(s) %in% lyrs_rm))
+r_cnt = sum(!is.na(s_cnt), na.rm=T) %>%
+  mask(raster(s, "depth"))
+#plot(raster(s, "depth"))
+r <- raster_unwrap(r_cnt)
+#plot(r)
+
+r_3857 <- projectRasterForLeaflet(r)
+
+vals <- getValues(r_3857)
+pal <- colorNumeric(
+  palette = 'Spectral', na.color="#00000000", 
+  reverse=T, domain = vals)
+
+leaflet(
+    options=c(leafletOptions(), attributionControl=F, zoomControl=F, worldCopyJump=T)) %>%
+    addProviderTiles("Stamen.TonerLite", group = "B&W") %>%
+    addRasterImage(r_3857, project=F, colors=pal, opacity=0.8) %>%
+    addGraticule() %>% # interval=1
+    addScaleBar('bottomleft') %>%
+    addLegend('bottomright', pal, vals, opacity=0.8, title="Count")
+```
+
+TODO:
+
+- contours of depth bins for Figure 3
+
+- zoom in for West (NOTE: 2x-clicking on html zooms)
+
+- corresponding table/plot of "Area (km^2) by Tide/Wave/Wind" and map with contours of energy bins.
+
+```{r energy, eval=F}
+
+# table by energy ----
+# TODO: for (energy in c("tide","wave","wind")){...}
+
+# limited to a maximum depth (tidal: < 100 m; wave: < 200 m; wind: < 1000 m) and minimum energy classes (tidal: > 500 W/m2; wave: > 10 kW/m; wind > 7 m/s)
+limits <- list(
+  tide = list(
+    break_min = c(500, 1000, 1500),
+    break_labels = c("500 - 1,000", "1000 - 1,500", ">1,500"),
+    depth = list(
+      min = 0,
+      max = 100)),
+  wave = list(
+    break_min = c(10, 20, 30),
+    break_labels = c("10 - 20", "20 - 30", ">30"),
+    depth = list(
+      min = 0,
+      max = 200)),
+  wind = list(
+    break_min = c(7,8.5,10),
+    break_labels = c("7 - 8.5", "8.5 - 10", ">10"),
+    depth = list(
+      min = 0,
+      max = 1000)))
+
+energy     <- "wind"
+tbl_e      <- tbl_s
+tbl$energy <- tbl[[energy]]
+lims       <- limits[[energy]]
+
+tbl_e <- tbl_e %>%
+  filter(
+    energy >= lims$break_min[1],
+    depth  >= lims$depth$min,
+    depth  <= lims$depth$max,
+    !is.na(energy),
+    !is.na(depth)) %>% 
+  mutate(
+    energy_cat = cut(energy, c(lims$break_min, Inf), include.lowest = T))
+
+totals <- tbl %>% 
+  group_by(energy_cat) %>%
+  summarise(
+    area_km2 = sum(area_km2))
+
+tbl_long <- tbl %>% 
+  select(-energy, -depth, -wind) %>% 
+  gather(key = layer, value = value, -energy_cat, -area_km2) %>%
+  filter(!is.na(value)) %>%
+  group_by(layer, energy_cat) %>%
+  summarise(
+    area_km2 = sum(area_km2)) %>%
+  spread(energy_cat, area_km2)
+
+lims$min_breaks
+
+setNames(  names(tbl_long[-1]))
+c()
+rename_at()
+
+View(tbl_long)
+range(tbl_long$value)
+
+  
+  select(-depth, )
+table(tbl$energy_cat)
+names(tbl)
+```

@@ -28,48 +28,6 @@ if (!file.exists(ais_out_tif)){
 }
 ais <- raster(ais_orig_tif)
   
-# oil ----
-#oil_shp <- "/Volumes/Best HD/nrel_data_big/marinecadastre.gov/Active Oil and Gas Leases/actlease_dir/ActiveLeases_APR2017.shp"
-oil_shps <- c(
-  "West"           <- "/Volumes/Best HD/nrel_data_big/marinecadastre.gov/Active Oil and Gas Leases/pac_lease(3)_dir/BOEM_Pacific_Leases.shp",
-  "Gulf of Mexico" <- "/Volumes/Best HD/nrel_data_big/marinecadastre.gov/Active Oil and Gas Leases/actlease_dir/ActiveLeases_APR2017.shp",
-  "Alaska"         <- "/Volumes/Best HD/nrel_data_big/marinecadastre.gov/Active Oil and Gas Leases/AKUpdate_dir/AK_Lease.shp")
-
-if (ter %in% names(oil_shps)){
-  oil_shp <- oil_shps[ter]
-  oil_tif <- sprintf("./oil/%s_active_%s_%dkm.tif", ter, prj, res_km)
-
-  if (!file.exists(oil_tif)){
-    oil <- read_sf(oil_shp) %>%
-      mutate(
-        one = 1) %>% #,
-      st_transform(leaflet:::epsg3857)
-  
-    oil_r <- fasterize(oil, depth, field="one", fun="first") # plot(oil_r)
-    
-    dir.create("./oil", showWarnings=F)
-    writeRaster(oil_r, oil_tif, overwrite=T)
-  }
-  oil <- raster(oil_tif)
-} else {
-  rm(oil)
-}
-
-# wind ----
-wind_shp <- "/Volumes/Best HD/nrel_data_big/nrel.gov/wind/pac/pacific_coast_90mwindspeed_off.shp"
-wind_tif <- sprintf("./wind/%s_90mwindspeed_%s_%dkm.tif", ter, prj, res_km)
-
-if (!file.exists(wind_tif)){
-  wind <- read_sf(wind_shp) %>%
-    st_transform(leaflet:::epsg3857)
-
-  wind_r <- fasterize(wind, depth, field="Speed_90", fun="first") # plot(wind_r)
-  
-  dir.create("./wind", showWarnings=F)
-  writeRaster(wind_r, wind_tif, overwrite=T)
-}
-wind <- raster(wind_tif)
-
 # plot depth ----
 
 system.time({
@@ -89,7 +47,3 @@ system.time({
       colors=pal_depth, opacity=0.7)
   
 })
-
-
-
-# TODO: constraints & uses ----
