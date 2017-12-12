@@ -4,20 +4,20 @@ author: "Ben Best"
 date: |
   | `r format(Sys.time(), '%Y-%m-%d')`
 output:
-  pdf_document:
-    fig_caption: yes
-    keep_tex: yes
-    toc: yes
-  bookdown::word_document2:
-    toc: yes
-    toc_depth: 4
   html_document:
     toc: yes
     toc_depth: '4'
+  bookdown::word_document2:
+    toc: yes
+    toc_depth: 4
   bookdown::html_document2:
     self_contained: no
     toc: yes
     toc_float: yes
+  pdf_document:
+    fig_caption: yes
+    keep_tex: yes
+    toc: yes
 ---
 
 Here are preliminary results to be output for each of the 8 regions: 
@@ -225,7 +225,7 @@ tbl_d %>%
 
 ## Plot
 
-```{r figTerDepth, fig.cap="Area of Cumulative Ocean Use by Depth Bin for West region. Cumulative use are counted and summarized by depth bin and area.", eval=F}
+```{r figTerDepth, fig.cap="Area of Cumulative Ocean Use by Depth Bin for West region. Cumulative use are counted and summarized by depth bin and area.", eval=T}
 # table of depth for figure
 tbl_df <- tbl_s %>%
   mutate(
@@ -259,7 +259,7 @@ ggplot(data = tbl_df2, aes(x = depth_cat, y = area_km2, fill = tally)) +
 
 ## Map
 
-```{r mapTerDepth, fig.cap='Map of cumulative ocean use in West region.', eval=F}
+```{r mapTerDepth, fig.cap='Map of cumulative ocean use in West region.', eval=T}
 #names(s)
 lyrs_rm <- c("depth","wind","area_km2")
 s_cnt <- dropLayer(s, which(names(s) %in% lyrs_rm))
