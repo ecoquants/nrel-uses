@@ -20,7 +20,7 @@ output:
     toc: yes
 ---
 
-Here are preliminary results to be output for each of the 8 regions: 
+Here are preliminary results of the form (table, plot, map) to be output with many more layers and for each of the 8 regions: 
 
 1. Alaska
 1. Atlantic Islands
