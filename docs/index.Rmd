@@ -38,10 +38,8 @@ library(rmarkdown)
 library(bookdown)
 library(glue)
 library(raster)
-#library(tabularaster)
 library(formattable)
 library(htmltools)
-#library(kableExtra)
 library(DT)
 library(leaflet)
 devtools::load_all("~/github/nrelutils") # devtools::install_github("ecoquants/nrelutils"); library(nrelutils) 
@@ -248,8 +246,7 @@ tbl_df2 <- tbl_df %>%
   #     group_by(depth_cat, tally) %>%
   #     summarise(
   #       area_km2 = sum(area_km2))) %>%
-  filter(tally>0)
-#View(tbl_df2)
+  filter(tally>0) # View(tbl_df2)
 
 ggplot(data = tbl_df2, aes(x = depth_cat, y = area_km2, fill = tally)) + 
   geom_col() +
