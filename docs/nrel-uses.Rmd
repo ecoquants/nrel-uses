@@ -1,31 +1,26 @@
 ---
-title: "Preliminary Results for West Region by Depth"
+title: "Ocean Uses and Marine Renewable Energy"
 author: "Ben Best"
-date: "`r format(Sys.time(), '%Y-%m-%d %H:%M')`"
+date: '`r format(Sys.time(), "%Y-%m-%d %H:%M")`'
 output:
-  word_document:
-    toc: yes
-    toc_depth: '4'
   pdf_document:
     fig_caption: yes
     toc: yes
   html_document:
     toc: yes
     toc_depth: '4'
+  word_document:
+    toc: yes
+    toc_depth: '4'
 ---
 
-Here are preliminary results of the form (table, plot, map) to be output with many more layers and for each of the 8 regions: 
-
-1. Alaska
-1. Atlantic Islands
-1. East
-1. Great Lakes
-1. Gulf of Mexico
-1. Hawaii
-1. Pacific Islands
-1. West
-
 ```{r setup, include=FALSE}
+# TODO: 
+# - for (energy in c("tide","wave","wind")){...}
+# - contours of depth bins for map.
+# - zoom in for West (NOTE: 2x-clicking on html zooms)
+# - corresponding table/plot of "Area (km^2) by Tide/Wave/Wind" and map with contours of energy bins.
+
 library(tidyverse)
 library(knitr)
 library(rmarkdown)
@@ -37,32 +32,36 @@ library(formattable)
 library(htmltools)
 library(DT)
 library(leaflet)
+library(yaml)
+library(here)
 devtools::load_all("~/github/nrelutils") # devtools::install_github("ecoquants/nrelutils"); library(nrelutils) 
 select <- dplyr::select
 
-knitr::opts_chunk$set(warning=F, message=F, eval=T, echo=F, cache=F) # DEBUG
-#knitr::opts_chunk$set(echo=F) # DEBUG
+knitr::opts_chunk$set(warning=F, message=F, eval=T, echo=F, cache=F)
 
 # paths ----
-#setwd("~/github/nrelutils/docs")
-dir_data      <- "../data"
-dir_prep      <- "../prep"
-dir_prep_data <- "../prep/data"
-lyr_params_csv      <- file.path(dir_prep,"prep_params.csv")
-lyr_categories_xlsx <- file.path(dir_data, "categories_and_datasets.xlsx")
-eez_s05_wgcs_geo    <- file.path(dir_prep_data, "eez/usa_ter_simplify05_wgcs.geojson")
+dir_data      <- here("data")
+dir_prep      <- here("prep")
+dir_prep_data <- here("prep/data")
+lyr_params_csv      <- here("prep/prep_params.csv")
+lyr_categories_xlsx <- here("data/categories_and_datasets.xlsx")
+eez_s05_wgcs_geo    <- here("prep/data/eez/usa_ter_simplify05_wgcs.geojson")
 
 lyr_categories  <- readxl::read_xlsx(lyr_categories_xlsx, sheet="datasets")
 lyr_params      <- suppressMessages(readr::read_csv(lyr_params_csv))
 eez_s05_wgcs_sf <- read_sf(eez_s05_wgcs_geo)
-territories     <- eez_s05_wgcs_sf$territory
 limits          <- nrelutils::nrel_limits
 
 i_tbl <<- 0
-src = NULL
-for (ter in territories){ # ter = "West" # territories[1]
-#for (ter in territories[c(2,4)]){ # ter = "West" # territories[1]
-#for (ter in territories[c(2,4,5)]){ # ter = "West" # territories[1]
+src <- NULL
+
+# iterate over territories and bins
+territories <- eez_s05_wgcs_sf$territory  # territories <- c("Atlantic Islands","West")
+#bins <- names(limits) # 
+bins <- c("depth","wind") # bins <- c("depth")
+#territories <- c("Atlantic Islands","West"); bins <- c("depth")
+
+for (ter in territories){ # ter = "Atlantic Islands" # territories[1]
 
       src <- c(src, glue("
 ## {ter}
@@ -71,68 +70,56 @@ for (ter in territories){ # ter = "West" # territories[1]
 ter <- '{ter}'
 ```"))
 
-  # check for any missing binning fields (depth/tide/wave/wind)
-  ter_cum_tif      <- glue("{dir_data}/territories/{ter}_cum.tif")
-  ter_bin_lyr_csvs <- glue("{dir_data}/territories/{ter}_{names(limits)}.csv")
-  ter_bin_cum_csvs <- glue("{dir_data}/territories/{ter}_{names(limits)}_cum.csv")
+  ter_cnt_yml      <- glue("{dir_data}/territories/{ter}_cnt.yml")
+  ter_bin_lyr_csvs <- glue("{dir_data}/territories/{ter}_{bins}.csv")
+  ter_bin_cnt_csvs <- glue("{dir_data}/territories/{ter}_{bins}_cnt.csv")
   lyrs_redo <- lyr_params %>% 
     filter(key %in% names(limits), redo == TRUE)
 
   # get raster stack data for territory if needed
-  if (any(!file.exists(c(ter_bin_lyr_csvs, ter_bin_cum_csvs, ter_cum_tif))) | nrow(lyrs_redo) > 0){
+  if (any(!file.exists(c(ter_bin_lyr_csvs, ter_bin_cnt_csvs, ter_cnt_yml))) | nrow(lyrs_redo) > 0){
     s     <- ter_stack(ter, lyr_params, dir_prep_data)  
     tbl_s <- ter_stack_tbl(s)
   }
   
-  if (!file.exists(ter_cum_tif)){
-    
-    lyrs_rm <- c(names(nrel_limits), "area_km2")
-  s_cnt   <- raster::dropLayer(s, which(names(s) %in% lyrs_rm))
-  r_cnt   <- sum(!is.na(s_cnt), na.rm=T) %>%
-    raster::mask(raster::raster(s, "depth"))
-  r <- raster_unwrap(r_cnt) # plot(r)
-    
-    
-    r <- ter_cum_raster(s)
-    
-    
-    
-    
-    writeRaster(r, ter_cum_tif)
-  }
+  if (!file.exists(ter_cnt_yml))
+    make_ter_cnt_yml(s, ter_cnt_yml, dir_data, ter)
+  info <- yaml.load_file(ter_cnt_yml)
   
   src <- c(src, glue("
 ### Map of Ocean Use
 
-```{{r map{ter}, fig.cap='{map_caption_ter_cum(ter)}'}}
-ter_cum_tif  <- glue('{dir_data}/territories/{ter}_cum.tif')
-
-r <- raster(ter_cum_tif)
-map_ter_cum(r)
+```{{r map{ter}, fig.cap='{map_caption_ter_cnt(ter)}'}}
+map_ter_cnt('{ter_cnt_yml}')
 ```"))
   
-  #for (bin in names(limits)){ # bin = names(limits)[1]
-  for (bin in c("depth")){ # bin = names(limits)[1]
+  for (bin in bins){ # bin = bins[1]
     ter_bin_lyr_csv <- glue("{dir_data}/territories/{ter}_{bin}.csv")
-    ter_bin_cum_csv <- glue("{dir_data}/territories/{ter}_{bin}_cum.csv")
+    ter_bin_cnt_csv <- glue("{dir_data}/territories/{ter}_{bin}_cnt.csv")
     bin_html    <- lyr_params %>% 
       filter(key == bin) %>%
       .$title
     
-    # TODO: if no bin for ter
-    if (any(!file.exists(c(ter_bin_lyr_csv, ter_bin_cum_csv))) | bin %in% lyrs_redo$key){
+    # skip bin if not in territory
+    if (!bin %in% info$raster$layers){
+      write_lines(ter_bin_lyr_csv, "NA")
+      write_lines(ter_bin_cnt_csv, "NA")
+      next()
+    }
+    
+    if (any(!file.exists(c(ter_bin_lyr_csv, ter_bin_cnt_csv))) | bin %in% lyrs_redo$key){
       tbl_b   <- ter_bin(tbl_s, bin)
     }
     
     if (!file.exists(ter_bin_lyr_csv) | bin %in% lyrs_redo$key){
       tbl_bl  <- ter_bin_lyr(tbl_b)
-      tbl_bls <- ter_bin_smry(tbl_bl)
+      tbl_bls <- ter_bin_lyr_smry(tbl_bl)
       write_csv(tbl_bls, ter_bin_lyr_csv)
     } 
     
-    if (!file.exists(ter_bin_cum_csv) | bin %in% lyrs_redo$key){
-      tbl_bc  <- ter_bin_cum(tbl_b)
-      write_csv(tbl_bc, ter_bin_cum_csv)
+    if (!file.exists(ter_bin_cnt_csv) | bin %in% lyrs_redo$key){
+      tbl_bc  <- ter_bin_cnt(tbl_b)
+      write_csv(tbl_bc, ter_bin_cnt_csv)
     } 
     
     src <- c(src, glue("
@@ -142,84 +129,31 @@ bin_html    <- lyr_params %>%
   filter(key == bin) %>%
   .$title
 ```"))
-    
+
+    # TODO: if (fmt=="html_document")
     src <- c(src, glue("
 ### Plot of Ocean Use by {bin_html}
 
-```{{r fig{ter}{bin}, fig.cap='{plot_caption_ter_bin_cum(ter, bin_html)}'}}
-ter_bin_cum_csv <- '{dir_data}/territories/{ter}_{bin}_cum.csv'
-
-tbl_bc  <- suppressMessages(read_csv(ter_bin_cum_csv, trim_ws=F))
-
-plot_ter_bin_cum(tbl_bc, bin_html)
+```{{r fig{ter}{bin}, fig.cap='{plot_caption_ter_bin_cnt(ter, bin_html)}'}}
+plot_ter_bin_cnt('{dir_data}/territories/{ter}_{bin}_cnt.csv', bin_html)
 ```"))
     
     src <- c(src, glue("
 ### Table of Ocean Use by {bin_html}
 
 ```{{r tbl{ter}{bin}}}
-ter_bin_lyr_csv <- '{dir_data}/territories/{ter}_{bin}.csv'
-
-tbl_bls  <- suppressMessages(read_csv(ter_bin_lyr_csv, trim_ws=F))
-tbl_blsp <- ter_bin_lyr_smry_plus(tbl_bls, lyr_params, lyr_categories)
-
+tbl_blsp <- ter_bin_lyr_smry_plus('{dir_data}/territories/{ter}_{bin}.csv', lyr_params, lyr_categories)
 print_ter_bin_lyr_smry_plus(tbl_blsp)
 ```"))
 
   }
-  #devtools::load_all("~/github/nrelutils")
 }
 
 src <- sprintf("%s\n", src)
-write_lines(src, "index_src.Rmd")
+write_lines(src, "nrel-uses_src.Rmd")
 res = knit_child(text = unlist(src))
 ```
 
 ```{r knitted_result, results="asis"}
 cat(paste(res, collapse = "\n"))
-```
-
-
-TODO:
-
-- contours of depth bins for map.
-
-- zoom in for West (NOTE: 2x-clicking on html zooms)
-
-- corresponding table/plot of "Area (km^2) by Tide/Wave/Wind" and map with contours of energy bins.
-
-```{r energy, eval=F}
-# table by energy ----
-# TODO: for (energy in c("tide","wave","wind")){...}
-
-energy     <- "wind"
-tbl_e      <- tbl_s
-tbl$energy <- tbl[[energy]]
-lims       <- limits[[energy]]
-
-tbl_e <- tbl_e %>%
-  filter(
-    energy >= lims$break_min[1],
-    depth  >= lims$depth$min,
-    depth  <= lims$depth$max,
-    !is.na(energy),
-    !is.na(depth)) %>% 
-  mutate(
-    energy_cat = cut(energy, c(lims$break_min, Inf), include.lowest = T))
-
-totals <- tbl %>% 
-  group_by(energy_cat) %>%
-  summarise(
-    area_km2 = sum(area_km2))
-
-tbl_long <- tbl %>% 
-  select(-energy, -depth, -wind) %>% 
-  gather(key = layer, value = value, -energy_cat, -area_km2) %>%
-  filter(!is.na(value)) %>%
-  group_by(layer, energy_cat) %>%
-  summarise(
-    area_km2 = sum(area_km2)) %>%
-  spread(energy_cat, area_km2)
-
-
 ```
