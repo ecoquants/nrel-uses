@@ -1,44 +1,40 @@
-setwd("~/github/nrel-uses/prep/data")
-source("../prep_layer_functions.R")
-devtools::load_all("~/github/nrelutils") # devtools::install_github("ecoquants/nrelutils"); library(nrelutils) 
+source(here::here("prep/setup.R"))
+# devtools::load_all("~/github/nrelutils") 
 
 eez_wgcs_sf     <- read_sf(eez_wgcs_geo)
-eez_s05_wgcs_sf <- read_sf(eez_s05_wgcs_geo)
-# ply_map(eez_s05_wgcs_sf, "territory") # plot(eez_s05_wgcs_sf["territory"])
 territories     <- eez_wgcs_sf$territory
+#territories     <- "Great Lakes"
 
-# vars ----
-params <- read_csv('~/github/nrel-uses/prep/prep_params.csv') %>%
-  filter(!is.na(run))
-
-# loop params ----
-for (i in 1:nrow(params)){ # i <- 3
-  p <- params[i,]
-  if (!p$run) next
-  cat(glue("{i}: {p$key}"),"\n")
-
-  for (j in 1:length(territories)){ # j <- 1
-    ter <- eez_wgcs_sf$territory[j]
-    cat(glue("  {j}: {ter}"),"\n")
-    
+# TODO: cleanup this quick fix, genericize fxn for digest_txt with nrelutils::ply_to_tifs()
+if (F){
+  p <- list(key = "depth")
+  for (ter in eez_wgcs_sf$territory){
     digest_txt <- glue("./{p$key}/{ter}_{p$key}_epsg4326.txt")
-    if (!file.exists(digest_txt) | p$redo){
-      
-      # get eez and depth
-      ter_eez_wgcs_sf  <- get_ter_eez_wgcs_sf(ter)  # ply_map(ter_eez_wgcs_sf, "territory")
-      ter_depth_wgcs_r <- get_ter_depth_wgcs_r(ter) # r_map(ter_depth_wgcs_r)
+    tif        <- glue("{ter}_{p$key}_epsg4326.tif")
+    write_lines(glue("depth:{tif}"), digest_txt)
+  }
+}
 
-      # wrap and intersect with eez
-      ply <- sf_wrap_intersection(p$paths, ter_eez_wgcs_sf)
-      
-      # modify as needed
-      if (!is.na(p$mod_eval)){
-        ply <- eval(parse(text=p$mod_eval))
-      } # ply_map(ply)
-      
-      # convert to raster tifs
-      ply_to_tifs(ply, ter_depth_wgcs_r, ter, p$key, field=p$field, by=p$by)
-      # TODO: clip by reasonable depth > 0 & st_intersection(eez) 
-    }
+# loop layers ----
+for (i in 1:nrow(lyr_params)){ # i <- 7
+  lyr_p <- lyr_params[i,]
+  lyr <- lyr_p$key
+  #if (!lyr_p$run | lyr == "depth") next
+  if (!lyr_p$run) next
+  cat(glue("{i}: {lyr}"),"\n")
+
+  lyr_info <- get_lyr_info(lyr)
+
+  if (any(map_lgl(lyr_info$territories, is.null)) | lyr_p$redo){
+    cat("  NAs found, loading lyr_ply\n")
+    lyr_ply <- sf_lyr_ply(lyr_p)
+  #   # TODO: if raster input
+  }
+  
+  for (j in 1:length(territories)){ # j <- 1
+    ter <- territories[j]
+    cat(glue("  {j}: {ter}"),"\n")
+    # devtools::load_all("~/github/nrelutils") 
+    prep_lyr_ter(lyr_p, lyr_ply, ter)
   }
 }
