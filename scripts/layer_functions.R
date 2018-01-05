@@ -128,7 +128,7 @@ shippinglanes_ply_mod <- function(ply){
   ply_unaccounted_themelayer <- ply %>%
     filter(!ply$themelayer %in% c(vals_included, vals_excluded)) %>%
     .$themelayer %>% unique()
-  if (length(ply_unaccounted_themelayer) > 0) stop(glue("MISSING themelayer in shippinlanes: {paste(ply_unaccounted_themelayer, collapse=', '}"))
+  if (length(ply_unaccounted_themelayer) > 0) stop(glue("MISSING themelayer in shippinglanes: {paste(ply_unaccounted_themelayer, collapse=', '}"))
   
   ply <- ply %>%
     filter(themelayer %in% vals_included)
@@ -144,3 +144,4 @@ shippinglanes_ply_mod <- function(ply){
   ply
 }
 
+  

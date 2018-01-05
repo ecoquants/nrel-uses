@@ -21,7 +21,8 @@ output:
 # - table of layer x territory: present/absent.
 knitr::opts_chunk$set(warning=F, message=F, eval=T, echo=F, cache=F)
 
-source(here::here("prep/setup.R"))
+source(here::here("scripts/setup.R"))
+devtools::load_all(here("../nrelutils"))
 
 i_tbl <<- 0
 src <- NULL
@@ -31,7 +32,7 @@ territories <- eez_s05_wgcs_sf$territory
 # territories <- c("Alaska", "Atlantic Islands", "East", "Great Lakes", "Gulf of Mexico", "Hawaii", "Pacific Islands", "West")
 #territories <- c("Alaska", "East", "Great Lakes")
 # bins <- names(limits) # 
-bins <- c("depth","wind")
+bins <- c("depth","wind","wave")
 # territories <- c("Atlantic Islands", "East"); bins <- c("depth")
 
 for (ter in territories){ # ter = territories[1] # "Alaska" # "Atlantic Islands" # territories[1]
@@ -95,8 +96,8 @@ print_ter_bin_lyr_smry_plus(tbl_blsp)
   }
 }
 
-src <- sprintf("%s\n", src)
-#write_lines(src, here("docs/nrel-uses_src.Rmd"))
+src <- glue("{src}\n")
+write_lines(src, here("docs/nrel-uses_src.Rmd"))
 res = knit_child(text = unlist(src))
 ```
 
