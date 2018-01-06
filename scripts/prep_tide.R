@@ -18,7 +18,7 @@ tide_tbl     <- read_csv(tide_csv) %>%
 
 lyr <- "tide"
 lyr_info <- get_lyr_info(lyr)
-redo <- F
+redo <- T
 
 # reorder from small to big to NA
 territories <- c("Atlantic Islands", "East", "Gulf of Mexico", "West", "Alaska", "Great Lakes", "Hawaii", "Pacific Islands")
@@ -44,21 +44,25 @@ for (ter in territories){ # ter="Gulf of Mexico"
       lon <= b$xmax,
       lat >= b$ymin,
       lat <= b$ymax)
-  msg(g("    nrow(ter_tide_tbl): {nrow(ter_tide_tbl)}; range(ter_tide_tbl$pwr_wm2): {paste(range(ter_tide_tbl$pwr_wm2), collapse=', ')}"))
+  msg(g("    nrow(ter_tide_tbl): {nrow(ter_tide_tbl)}"))
   if (nrow(ter_tide_tbl) == 0 ){
     lyr_info$territories[[ter]] = NA
     set_lyr_info(lyr_info)
     next
   }
+  msg(g("    range(ter_tide_tbl$pwr_wm2): {paste(range(ter_tide_tbl$pwr_wm2), collapse=', ')}"))
 
-  msg("  limit tide points by exact territory polygon")
+  msg("  convert to points and save to geojson")
   if (!file.exists(ter_tide_pts_geo) | redo){
     ter_tide_pts <- st_as_sf(ter_tide_tbl, coords = c('lon','lat'), agr='constant', crs=4326)
-    ter_tide_pts <- st_intersection(
-      ter_tide_pts, 
-      ter_sf %>% select(territory)) %>%
-      filter(!is.na(territory))
-    msg(g("    nrow(ter_tide_pts): {nrow(ter_tide_tbl)}; range(ter_tide_pts$pwr_wm2): {paste(range(ter_tide_pts$pwr_wm2), collapse=', ')}"))
+    # YES! Way faster to limit by bounding box of territory, rasterize, then mask by depth
+    #        vs st_intersection(eez) ~ slow!
+    # msg("  limit tide points by exact territory polygon")
+    # ter_tide_pts <- st_intersection(
+    #   ter_tide_pts, 
+    #   ter_sf %>% select(territory)) %>%
+    #   filter(!is.na(territory))
+    # msg(g("    nrow(ter_tide_pts): {nrow(ter_tide_tbl)}; range(ter_tide_pts$pwr_wm2): {paste(range(ter_tide_pts$pwr_wm2), collapse=', ')}"))
     if (nrow(ter_tide_pts) == 0 ){
       lyr_info$territories[[ter]] = NA
       set_lyr_info(lyr_info)
@@ -75,7 +79,9 @@ for (ter in territories){ # ter="Gulf of Mexico"
   ter_tide_r = rasterize(
     ter_tide_pts %>% as('Spatial'),
     ter_depth_r,
-    field='pwr_wm2', fun=max, na.rm=T) # plot(ter_tide_r)
+    field='pwr_wm2', fun=max, na.rm=T) %>%
+    raster::mask(ter_depth_r)
+  # plot(ter_tide_r)
 
   msg("  writeRaster")
   writeRaster(ter_tide_r, ter_tide_r_tif, overwrite=T)
