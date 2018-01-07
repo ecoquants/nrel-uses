@@ -28,3 +28,6 @@ for (i in 1:nrow(lyr_params)){ # i <- 8
     prep_lyr_ter(lyr_p, lyr_ply, ter)
   }
 }
+
+
+# dominant use areas [1], general use footprint [0.6], and potential future use areas [0.3]

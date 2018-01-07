@@ -8,17 +8,15 @@ output:
     toc_depth: '4'
   pdf_document:
     fig_caption: yes
-    keep_tex: yes
+    keep_tex: no
     toc: yes
+    toc_depth: '4'
   word_document:
     toc: yes
     toc_depth: '4'
 ---
 
 ```{r setup, include=FALSE}
-# TODO: 
-# - + tide, wave
-# - table of layer x territory: present/absent.
 knitr::opts_chunk$set(warning=F, message=F, eval=T, echo=F, cache=F)
 
 source(here::here("scripts/setup.R"))
@@ -30,25 +28,33 @@ src <- NULL
 # iterate over territories and bins
 territories <- eez_s05_wgcs_sf$territory
 # territories <- c("Alaska", "Atlantic Islands", "East", "Great Lakes", "Gulf of Mexico", "Hawaii", "Pacific Islands", "West")
-#territories <- c("Alaska", "East", "Great Lakes")
-# bins <- names(limits) # 
-bins <- c("depth","wind","wave")
-# territories <- c("Atlantic Islands", "East"); bins <- c("depth")
+bins <- names(limits)
+
+msg(g("layers"))
+
+src <- c(src, glue("
+
+## Ocean Use Layers
+
+```{{r tblLayers}}
+dt_lyrs_ter(lyr_params)
+```"))
 
 for (ter in territories){ # ter = territories[1] # "Alaska" # "Atlantic Islands" # territories[1]
   msg(g("{ter}"))
   
   src <- c(src, glue("
+
 ## {ter}
 
 ```{{r {ter}}}
 ter <- '{ter}'
 ```"))
   
-  # devtools::load_all("~/github/nrelutils") 
   ter_info  <- make_ter_info(ter, lyr_params, bins)
-  
+
   src <- c(src, glue("
+
 ### {ter}: Map of Uses
 
 ```{{r map{ter}, fig.cap=\"{map_ter_caption(ter, 'all', 'count')}\"}}
@@ -65,6 +71,7 @@ map_ter(ter, 'all', 'count')
       .$title
     
     src <- c(src, glue("
+
 ```{{r {ter}-{bin}}}
 bin         <- '{bin}'
 bin_cap     <- '{bin_cap}'
@@ -72,6 +79,7 @@ bin_html    <- '{bin_html}'
 ```"))
 
     src <- c(src, glue("
+
 ### {ter}: Map of {bin_cap}
 
 ```{{r map{ter}{bin}, fig.cap=\"{map_ter_caption(ter, bin, 'limits')}\"}}
@@ -79,6 +87,7 @@ map_ter(ter, bin, 'limits')
 ```"))
 
     src <- c(src, glue("
+
 ### {ter}: Plot of Uses by {bin_cap}
 
 ```{{r fig{ter}{bin}, fig.cap='{plot_caption_ter_bin_cnt(ter, bin_html)}'}}
@@ -86,6 +95,7 @@ plot_ter_bin_cnt(ter, bin)
 ```"))
     
     src <- c(src, glue("
+
 ### {ter}: Table of Uses by {bin_cap}
 
 ```{{r tbl{ter}{bin}}}

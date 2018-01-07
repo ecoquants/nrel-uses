@@ -4,33 +4,37 @@ source(here::here("scripts/setup.R"))
 #library(RapidPolygonLookup)
 devtools::load_all(here("../nrelutils"))
 
-eez_wgcs_sf  <- read_sf(eez_wgcs_geo)
-territories  <- eez_wgcs_sf$territory
+#eez_wgcs_sf  <- read_sf(eez_wgcs_geo)
+territories  <- eez_s05_wgcs_sf$territory
 
 tide_csv     <- here("../nrel-cables/data/tide.csv")
-tide_tbl     <- read_csv(tide_csv) %>%
-  mutate(
-    lon = ifelse(lon < 0, lon + 360, lon)) %>%
-  select(region, lon, lat, pwr_wm2)
-# range(tide_tbl$lon) # 180.3469 295.5679
-# range(tide_tbl$pwr_wm2) # 180.3469 295.5679
-# hist(tide_tbl %>% filter(pwr_wm2 > 10) %>% .$pwr_wm2)
+# tide_tbl     <- read_csv(tide_csv) %>%
+#   mutate(
+#     lon = ifelse(lon < 0, lon + 360, lon)) %>%
+#   select(region, lon, lat, pwr_wm2)
 
 lyr <- "tide"
 lyr_info <- get_lyr_info(lyr)
-redo <- T
+redo <- F
 
 # reorder from small to big to NA
 territories <- c("Atlantic Islands", "East", "Gulf of Mexico", "West", "Alaska", "Great Lakes", "Hawaii", "Pacific Islands")
-msg(g("nrow(tide_tbl): {nrow(tide_tbl)}
-      territories: {paste(territories, collapse=', ')}"))
+#msg(g("nrow(tide_tbl): {nrow(tide_tbl)}
+#      territories: {paste(territories, collapse=', ')}"))
 
 for (ter in territories){ # ter="Gulf of Mexico"
-  ter_sf           <- eez_wgcs_sf %>% filter(territory == ter)
+  #ter_sf           <- eez_wgcs_sf %>% filter(territory == ter)
   ter_tide_r_tif   <- glue("{dir_lyrs}/{lyr}/{ter}_{lyr}_epsg4326.tif")
-  ter_tide_pts_geo <- glue("{dir_lyrs}/{lyr}/{ter}_{lyr}_epsg4326_pts.geojson")
+  #ter_tide_pts_geo <- glue("{dir_lyrs}/{lyr}/{ter}_{lyr}_epsg4326_pts.geojson")
   msg(g("{ter}"))
 
+  # fix yaml
+  if (file.exists(ter_tide_r_tif)){
+    lyr_info <- get_lyr_info(lyr)
+    lyr_info$territories[[ter]] = list(components = set_names(basename(ter_tide_r_tif), lyr) %>% as.list())
+    set_lyr_info(lyr_info)
+  }
+  
   if ((file.exists(ter_tide_r_tif) & !redo) | (!is.null(lyr_info$territories[[ter]]) && is.na(lyr_info$territories[[ter]]))){
     msg("  skipping")
     next
@@ -75,16 +79,19 @@ for (ter in territories){ # ter="Gulf of Mexico"
   }
 
   msg("  rasterize to depth grid, NOTE: using max, not mean or last")
-  ter_depth_r <- get_ter_depth_wgcs_r(ter)
-  ter_tide_r = rasterize(
-    ter_tide_pts %>% as('Spatial'),
-    ter_depth_r,
-    field='pwr_wm2', fun=max, na.rm=T) %>%
-    raster::mask(ter_depth_r)
-  # plot(ter_tide_r)
-
-  msg("  writeRaster")
-  writeRaster(ter_tide_r, ter_tide_r_tif, overwrite=T)
-  lyr_info$territories[[ter]] = ter_tide_r_tif
+  if (!file.exists(ter_tide_r_tif) | redo){
+    ter_depth_r <- get_ter_depth_wgcs_r(ter)
+    ter_tide_r = rasterize(
+      ter_tide_pts %>% as('Spatial'),
+      ter_depth_r,
+      field='pwr_wm2', fun=max, na.rm=T) %>%
+      raster::mask(ter_depth_r)
+    # plot(ter_tide_r)
+  
+    msg("  writeRaster")
+    writeRaster(ter_tide_r, ter_tide_r_tif, overwrite=T)
+  }
+  
+  lyr_info$territories[[ter]]$components[[lyr]] = basename(ter_tide_r_tif)
   set_lyr_info(lyr_info)
 }
