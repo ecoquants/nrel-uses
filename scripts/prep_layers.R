@@ -16,7 +16,7 @@ for (i in 1:nrow(lyr_params)){ # i <- 8
   lyr_info <- get_lyr_info(lyr)
 
   if (any(map_lgl(lyr_info$territories, is.null)) | lyr_p$redo){
-    cat("  territories with NULLs found, loading lyr_ply\n")
+    cat("  territories with NULLs found or layer_params.csv redo=T, loading lyr_ply\n")
     lyr_ply <- sf_lyr_ply(lyr_p)
   #   # TODO: if raster input
   }
@@ -28,6 +28,3 @@ for (i in 1:nrow(lyr_params)){ # i <- 8
     prep_lyr_ter(lyr_p, lyr_ply, ter)
   }
 }
-
-
-# dominant use areas [1], general use footprint [0.6], and potential future use areas [0.3]
