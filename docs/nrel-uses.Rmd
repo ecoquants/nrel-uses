@@ -55,6 +55,22 @@ ter <- '{ter}'
   
   ter_info  <- make_ter_info(ter, lyr_params, bins)
 
+  # TODO: mask(), crop(), raster_trim() at lyr prep; extend() at ter_stack_r()
+#   Hawaii  - 2018-01-08 07:32:14 
+#   missing or redo layer oceanuseatlas.orwa, but not in Hawaii, so ter_info$layers$oceanuseatlas.orwa = NA  - 2018-01-08 07:32:14 
+#   missing_layers: oceanuseatlas.hi  - 2018-01-08 07:32:14 
+#   missing_types :   - 2018-01-08 07:32:14 
+#   loading ter_s, ter_s_tbl  - 2018-01-08 07:32:14 
+#     Hawaii - aquaculture  - 2018-01-08 07:32:14 
+#     Hawaii - depth  - 2018-01-08 07:32:14 
+#     Hawaii - mpa  - 2018-01-08 07:32:14 
+#     Hawaii - oceanuseatlas.hi  - 2018-01-08 07:32:14 
+# Quitting from lines 20-114 (nrel-uses.Rmd) 
+#  Hide Traceback
+#  
+#  Rerun with Debug
+#  Error in compareRaster(x) : different extent 
+  
   src <- c(src, glue("
 
 ### {ter}: Map of Uses

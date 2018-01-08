@@ -116,8 +116,8 @@ if (do_ca){
 #gdb <- gdbs[["HI"]]
 do_orwa <- F
 if (do_orwa){
-  #rgn <- "ORWA"; layer_name <- "OceanUsesOregonWashingtonPROUA"
-  rgn <- "HI"; layer_name <- "OceanUsesHawaiiPROUA"
+  rgn <- "ORWA"; layer_name <- "OceanUsesOregonWashingtonPROUA"
+  #rgn <- "HI"; layer_name <- "OceanUsesHawaiiPROUA"
   
   gdb <- gdbs[[rgn]]
   dataset <- glue("oceanuseatlas.{str_to_lower(rgn)}")
@@ -125,13 +125,20 @@ if (do_orwa){
   dir.create(dir_lyr_prep, recursive=T, showWarnings = F)
   dataset_geo <- glue("{dir_lyr_prep}/{dataset}.geojson")
   
+  # quick fix of column names
+  tmp_sf <- read_sf(dataset_geo)
+  names(tmp_sf)
+  names(tmp_sf)[1:2] <- c("score", "layer")
+  if (file.exists(dataset_geo)) unlink(dataset_geo)
+  write_sf(tmp_sf, dataset_geo)
+  
   st_layers(gdb)
   lyrs_sf <- st_read(gdb, layer_name) # dominant = 1, footprint = 2 use (not footprint|future)
   # lyrs_sf %>%
   #   st_set_geometry(NULL) %>%
   #   View()
-  names(lyrs_sf)
-  summary(lyrs_sf)
+  #names(lyrs_sf)
+  #summary(lyrs_sf)
   # ORWA -- 4 columns: lyr, lyrExcludes, lyrIncludes, lyrOregon, lyrWashington
 
   if (rgn=="ORWA"){
@@ -166,6 +173,7 @@ if (do_orwa){
       new_lyrs_sf <- rbind(new_lyrs_sf, lyr_sf)
     }
   }
+  names(lyrs_sf)[1:2] <- c("score", "layer")
 
   idx_invalid <- which(!st_is_valid(new_lyrs_sf))
   if (length(idx_invalid) > 0){
