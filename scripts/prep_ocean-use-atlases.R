@@ -111,7 +111,7 @@ if (do_ca){
   write_sf(lyrs_sf_gcs, dataset_geo)
 }
 
-# ORWA gdb
+# ORWA| HI gdb ----
 # *[island|state], *includes, *excludes, 
 #gdb <- gdbs[["HI"]]
 do_orwa <- F
@@ -126,13 +126,15 @@ if (do_orwa){
   dataset_geo <- glue("{dir_lyr_prep}/{dataset}.geojson")
   
   # quick fix of column names
-  tmp_sf <- read_sf(dataset_geo)
-  names(tmp_sf)
-  names(tmp_sf)[1:2] <- c("score", "layer")
-  if (file.exists(dataset_geo)) unlink(dataset_geo)
-  write_sf(tmp_sf, dataset_geo)
+  if (F){
+    tmp_sf <- read_sf(dataset_geo)
+    names(tmp_sf)
+    names(tmp_sf)[1:2] <- c("score", "layer")
+    if (file.exists(dataset_geo)) unlink(dataset_geo)
+    write_sf(tmp_sf, dataset_geo)
+  }
   
-  st_layers(gdb)
+  #st_layers(gdb)
   lyrs_sf <- st_read(gdb, layer_name) # dominant = 1, footprint = 2 use (not footprint|future)
   # lyrs_sf %>%
   #   st_set_geometry(NULL) %>%
@@ -147,7 +149,7 @@ if (do_orwa){
       names(lyrs_sf)[str_detect(names(lyrs_sf), ".*(Excludes|Includes|Oregon|Washington)$")])
     lyrs_sel <- sort(setdiff(names(lyrs_sf), lyrs_rm))
   } else { # rgn=="HI"
-    lyrs_sel <- sort(setdiff(names(lyrs_sf)[1:30], "dominantUseSummary"))
+    lyrs_sel <- sort(setdiff(names(lyrs_sf)[1:30], c("dominantUseSummary")))
   }  
   
   lyrs_sf <- lyrs_sf %>%
@@ -160,11 +162,11 @@ if (do_orwa){
     cat(glue("{sprintf('%02d', i)} of {length(lyrs_sel)}: {lyr} -> {lyr_new}"), "\n")
     
     lyr_sf <- lyrs_sf %>%
-      select(var=!!lyr) %>%
+      select(var = !!lyr) %>%
       filter(var > 0) %>%
       mutate(
-        score <- var/2,
-        layer <- lyr_new) %>%
+        score = var/2,
+        layer = lyr_new) %>%
       select(-var)
     
     if (i==1){
@@ -173,17 +175,19 @@ if (do_orwa){
       new_lyrs_sf <- rbind(new_lyrs_sf, lyr_sf)
     }
   }
-  names(lyrs_sf)[1:2] <- c("score", "layer")
+  names(new_lyrs_sf)
+  #names(new_lyrs_sf)[1:2] <- c("score", "layer")
 
-  idx_invalid <- which(!st_is_valid(new_lyrs_sf))
-  if (length(idx_invalid) > 0){
-    new_lyrs_sf[idx_invalid,] <- st_buffer(new_lyrs_sf[idx_invalid,], dist=0)
-  }
+  # idx_invalid <- which(!st_is_valid(new_lyrs_sf))
+  # if (length(idx_invalid) > 0){
+  #   new_lyrs_sf[idx_invalid,] <- st_buffer(new_lyrs_sf[idx_invalid,], dist=0)
+  # }
+  
   new_lyrs_sf_gcs <- st_transform(new_lyrs_sf, 4326)
-  idx_invalid <- which(!st_is_valid(new_lyrs_sf_gcs))
-  if (length(idx_invalid) > 0){
-    new_lyrs_sf_gcs[idx_invalid,] <- st_buffer(new_lyrs_sf_gcs[idx_invalid,], dist=0)
-  }
+  # idx_invalid <- which(!st_is_valid(new_lyrs_sf_gcs))
+  # if (length(idx_invalid) > 0){
+  #   new_lyrs_sf_gcs[idx_invalid,] <- st_buffer(new_lyrs_sf_gcs[idx_invalid,], dist=0)
+  # }
   if (file.exists(dataset_geo)) unlink(dataset_geo)
   write_sf(new_lyrs_sf_gcs, dataset_geo)
   

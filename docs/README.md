@@ -12,6 +12,5 @@ source("scripts/prep_layers.R")
 
 # generate report
 rmarkdown::render("docs/nrel-uses.Rmd", "all")
-rmarkdown::render("docs/nrel-uses.Rmd", "word_document")
-rmarkdown::render("docs/nrel-uses.Rmd", "pdf_document")
+rmarkdown::render("docs/nrel-uses.Rmd", "word_document"); rmarkdown::render("docs/nrel-uses.Rmd", "pdf_document")
 ```

@@ -26,9 +26,9 @@ i_tbl <<- 0
 src <- NULL
 
 # iterate over territories and bins
-#territories <- eez_s05_wgcs_sf$territory
-#territories <- "West"
-territories <- c("Alaska", "Atlantic Islands", "East", "Great Lakes", "Gulf of Mexico", "Hawaii", "Pacific Islands", "West")
+territories <- eez_s05_wgcs_sf$territory
+#territories <- c("Alaska", "Atlantic Islands", "East", "Great Lakes", "Gulf of Mexico", "Hawaii", "Pacific Islands", "West")
+#territories <- c("Hawaii")
 bins <- names(limits)
 #bins <- "depth"
 
@@ -36,7 +36,7 @@ msg("layers")
 
 src <- c(src, glue("
 
-## Ocean Use Layers
+## Ocean Use Datasets
 
 ```{{r tblLayers}}
 dt_lyrs_ter(lyr_params)
