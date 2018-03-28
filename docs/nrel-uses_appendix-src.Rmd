@@ -1,0 +1,646 @@
+
+## Alaska
+
+```{r Alaska}
+ter <- 'Alaska'
+```
+
+### Alaska: Map of Uses
+
+```{r mapAlaska, fig.cap="Map of cumulative ocean use in Alaska region."}
+map_ter(ter, 'all', 'count')
+```
+
+```{r Alaska-depth}
+bin         <- 'depth'
+bin_cap     <- 'Depth'
+bin_html    <- 'Depth (m)'
+```
+
+### Alaska: Map of Depth
+
+```{r mapAlaskadepth, fig.cap="Map of viable depth in Alaska region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Alaska: Plot of Uses by Depth
+
+```{r figAlaskadepth, fig.cap='Area of Cumulative Ocean Use by Depth (m) for Alaska region. Cumulative use are counted and summarized by Depth (m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Alaska: Table of Uses by Depth
+
+```{r tblAlaskadepth}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r Alaska-tide}
+bin         <- 'tide'
+bin_cap     <- 'Tide'
+bin_html    <- 'Tide (W/m2)'
+```
+
+### Alaska: Map of Tide
+
+```{r mapAlaskatide, fig.cap="Map of viable tide in Alaska region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Alaska: Plot of Uses by Tide
+
+```{r figAlaskatide, fig.cap='Area of Cumulative Ocean Use by Tide (W/m2) for Alaska region. Cumulative use are counted and summarized by Tide (W/m2) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Alaska: Table of Uses by Tide
+
+```{r tblAlaskatide}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r Alaska-wave}
+bin         <- 'wave'
+bin_cap     <- 'Wave'
+bin_html    <- 'Wave (kW/m)'
+```
+
+### Alaska: Map of Wave
+
+```{r mapAlaskawave, fig.cap="Map of viable wave in Alaska region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Alaska: Plot of Uses by Wave
+
+```{r figAlaskawave, fig.cap='Area of Cumulative Ocean Use by Wave (kW/m) for Alaska region. Cumulative use are counted and summarized by Wave (kW/m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Alaska: Table of Uses by Wave
+
+```{r tblAlaskawave}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+## Atlantic Islands
+
+```{r Atlantic Islands}
+ter <- 'Atlantic Islands'
+```
+
+### Atlantic Islands: Map of Uses
+
+```{r mapAtlantic Islands, fig.cap="Map of cumulative ocean use in Atlantic Islands region."}
+map_ter(ter, 'all', 'count')
+```
+
+```{r Atlantic Islands-depth}
+bin         <- 'depth'
+bin_cap     <- 'Depth'
+bin_html    <- 'Depth (m)'
+```
+
+### Atlantic Islands: Map of Depth
+
+```{r mapAtlantic Islandsdepth, fig.cap="Map of viable depth in Atlantic Islands region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Atlantic Islands: Plot of Uses by Depth
+
+```{r figAtlantic Islandsdepth, fig.cap='Area of Cumulative Ocean Use by Depth (m) for Atlantic Islands region. Cumulative use are counted and summarized by Depth (m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Atlantic Islands: Table of Uses by Depth
+
+```{r tblAtlantic Islandsdepth}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r Atlantic Islands-wave}
+bin         <- 'wave'
+bin_cap     <- 'Wave'
+bin_html    <- 'Wave (kW/m)'
+```
+
+### Atlantic Islands: Map of Wave
+
+```{r mapAtlantic Islandswave, fig.cap="Map of viable wave in Atlantic Islands region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Atlantic Islands: Plot of Uses by Wave
+
+```{r figAtlantic Islandswave, fig.cap='Area of Cumulative Ocean Use by Wave (kW/m) for Atlantic Islands region. Cumulative use are counted and summarized by Wave (kW/m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Atlantic Islands: Table of Uses by Wave
+
+```{r tblAtlantic Islandswave}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+## East
+
+```{r East}
+ter <- 'East'
+```
+
+### East: Map of Uses
+
+```{r mapEast, fig.cap="Map of cumulative ocean use in East region."}
+map_ter(ter, 'all', 'count')
+```
+
+```{r East-depth}
+bin         <- 'depth'
+bin_cap     <- 'Depth'
+bin_html    <- 'Depth (m)'
+```
+
+### East: Map of Depth
+
+```{r mapEastdepth, fig.cap="Map of viable depth in East region."}
+map_ter(ter, bin, 'limits')
+```
+
+### East: Plot of Uses by Depth
+
+```{r figEastdepth, fig.cap='Area of Cumulative Ocean Use by Depth (m) for East region. Cumulative use are counted and summarized by Depth (m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### East: Table of Uses by Depth
+
+```{r tblEastdepth}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r East-tide}
+bin         <- 'tide'
+bin_cap     <- 'Tide'
+bin_html    <- 'Tide (W/m2)'
+```
+
+### East: Map of Tide
+
+```{r mapEasttide, fig.cap="Map of viable tide in East region."}
+map_ter(ter, bin, 'limits')
+```
+
+### East: Plot of Uses by Tide
+
+```{r figEasttide, fig.cap='Area of Cumulative Ocean Use by Tide (W/m2) for East region. Cumulative use are counted and summarized by Tide (W/m2) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### East: Table of Uses by Tide
+
+```{r tblEasttide}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r East-wave}
+bin         <- 'wave'
+bin_cap     <- 'Wave'
+bin_html    <- 'Wave (kW/m)'
+```
+
+### East: Map of Wave
+
+```{r mapEastwave, fig.cap="Map of viable wave in East region."}
+map_ter(ter, bin, 'limits')
+```
+
+### East: Plot of Uses by Wave
+
+```{r figEastwave, fig.cap='Area of Cumulative Ocean Use by Wave (kW/m) for East region. Cumulative use are counted and summarized by Wave (kW/m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### East: Table of Uses by Wave
+
+```{r tblEastwave}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r East-wind}
+bin         <- 'wind'
+bin_cap     <- 'Wind'
+bin_html    <- 'Wind (m/s @ 90m)'
+```
+
+### East: Map of Wind
+
+```{r mapEastwind, fig.cap="Map of viable wind in East region."}
+map_ter(ter, bin, 'limits')
+```
+
+### East: Plot of Uses by Wind
+
+```{r figEastwind, fig.cap='Area of Cumulative Ocean Use by Wind (m/s @ 90m) for East region. Cumulative use are counted and summarized by Wind (m/s @ 90m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### East: Table of Uses by Wind
+
+```{r tblEastwind}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+## Great Lakes
+
+```{r Great Lakes}
+ter <- 'Great Lakes'
+```
+
+### Great Lakes: Map of Uses
+
+```{r mapGreat Lakes, fig.cap="Map of cumulative ocean use in Great Lakes region."}
+map_ter(ter, 'all', 'count')
+```
+
+```{r Great Lakes-depth}
+bin         <- 'depth'
+bin_cap     <- 'Depth'
+bin_html    <- 'Depth (m)'
+```
+
+### Great Lakes: Map of Depth
+
+```{r mapGreat Lakesdepth, fig.cap="Map of viable depth in Great Lakes region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Great Lakes: Plot of Uses by Depth
+
+```{r figGreat Lakesdepth, fig.cap='Area of Cumulative Ocean Use by Depth (m) for Great Lakes region. Cumulative use are counted and summarized by Depth (m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Great Lakes: Table of Uses by Depth
+
+```{r tblGreat Lakesdepth}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r Great Lakes-wind}
+bin         <- 'wind'
+bin_cap     <- 'Wind'
+bin_html    <- 'Wind (m/s @ 90m)'
+```
+
+### Great Lakes: Map of Wind
+
+```{r mapGreat Lakeswind, fig.cap="Map of viable wind in Great Lakes region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Great Lakes: Plot of Uses by Wind
+
+```{r figGreat Lakeswind, fig.cap='Area of Cumulative Ocean Use by Wind (m/s @ 90m) for Great Lakes region. Cumulative use are counted and summarized by Wind (m/s @ 90m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Great Lakes: Table of Uses by Wind
+
+```{r tblGreat Lakeswind}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+## Gulf of Mexico
+
+```{r Gulf of Mexico}
+ter <- 'Gulf of Mexico'
+```
+
+### Gulf of Mexico: Map of Uses
+
+```{r mapGulf of Mexico, fig.cap="Map of cumulative ocean use in Gulf of Mexico region."}
+map_ter(ter, 'all', 'count')
+```
+
+```{r Gulf of Mexico-depth}
+bin         <- 'depth'
+bin_cap     <- 'Depth'
+bin_html    <- 'Depth (m)'
+```
+
+### Gulf of Mexico: Map of Depth
+
+```{r mapGulf of Mexicodepth, fig.cap="Map of viable depth in Gulf of Mexico region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Gulf of Mexico: Plot of Uses by Depth
+
+```{r figGulf of Mexicodepth, fig.cap='Area of Cumulative Ocean Use by Depth (m) for Gulf of Mexico region. Cumulative use are counted and summarized by Depth (m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Gulf of Mexico: Table of Uses by Depth
+
+```{r tblGulf of Mexicodepth}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r Gulf of Mexico-tide}
+bin         <- 'tide'
+bin_cap     <- 'Tide'
+bin_html    <- 'Tide (W/m2)'
+```
+
+### Gulf of Mexico: Map of Tide
+
+```{r mapGulf of Mexicotide, fig.cap="Map of viable tide in Gulf of Mexico region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Gulf of Mexico: Plot of Uses by Tide
+
+```{r figGulf of Mexicotide, fig.cap='Area of Cumulative Ocean Use by Tide (W/m2) for Gulf of Mexico region. Cumulative use are counted and summarized by Tide (W/m2) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Gulf of Mexico: Table of Uses by Tide
+
+```{r tblGulf of Mexicotide}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r Gulf of Mexico-wind}
+bin         <- 'wind'
+bin_cap     <- 'Wind'
+bin_html    <- 'Wind (m/s @ 90m)'
+```
+
+### Gulf of Mexico: Map of Wind
+
+```{r mapGulf of Mexicowind, fig.cap="Map of viable wind in Gulf of Mexico region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Gulf of Mexico: Plot of Uses by Wind
+
+```{r figGulf of Mexicowind, fig.cap='Area of Cumulative Ocean Use by Wind (m/s @ 90m) for Gulf of Mexico region. Cumulative use are counted and summarized by Wind (m/s @ 90m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Gulf of Mexico: Table of Uses by Wind
+
+```{r tblGulf of Mexicowind}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+## Hawaii
+
+```{r Hawaii}
+ter <- 'Hawaii'
+```
+
+### Hawaii: Map of Uses
+
+```{r mapHawaii, fig.cap="Map of cumulative ocean use in Hawaii region."}
+map_ter(ter, 'all', 'count')
+```
+
+```{r Hawaii-depth}
+bin         <- 'depth'
+bin_cap     <- 'Depth'
+bin_html    <- 'Depth (m)'
+```
+
+### Hawaii: Map of Depth
+
+```{r mapHawaiidepth, fig.cap="Map of viable depth in Hawaii region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Hawaii: Plot of Uses by Depth
+
+```{r figHawaiidepth, fig.cap='Area of Cumulative Ocean Use by Depth (m) for Hawaii region. Cumulative use are counted and summarized by Depth (m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Hawaii: Table of Uses by Depth
+
+```{r tblHawaiidepth}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r Hawaii-wave}
+bin         <- 'wave'
+bin_cap     <- 'Wave'
+bin_html    <- 'Wave (kW/m)'
+```
+
+### Hawaii: Map of Wave
+
+```{r mapHawaiiwave, fig.cap="Map of viable wave in Hawaii region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Hawaii: Plot of Uses by Wave
+
+```{r figHawaiiwave, fig.cap='Area of Cumulative Ocean Use by Wave (kW/m) for Hawaii region. Cumulative use are counted and summarized by Wave (kW/m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Hawaii: Table of Uses by Wave
+
+```{r tblHawaiiwave}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r Hawaii-wind}
+bin         <- 'wind'
+bin_cap     <- 'Wind'
+bin_html    <- 'Wind (m/s @ 90m)'
+```
+
+### Hawaii: Map of Wind
+
+```{r mapHawaiiwind, fig.cap="Map of viable wind in Hawaii region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Hawaii: Plot of Uses by Wind
+
+```{r figHawaiiwind, fig.cap='Area of Cumulative Ocean Use by Wind (m/s @ 90m) for Hawaii region. Cumulative use are counted and summarized by Wind (m/s @ 90m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Hawaii: Table of Uses by Wind
+
+```{r tblHawaiiwind}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+## Pacific Islands
+
+```{r Pacific Islands}
+ter <- 'Pacific Islands'
+```
+
+### Pacific Islands: Map of Uses
+
+```{r mapPacific Islands, fig.cap="Map of cumulative ocean use in Pacific Islands region."}
+map_ter(ter, 'all', 'count')
+```
+
+```{r Pacific Islands-depth}
+bin         <- 'depth'
+bin_cap     <- 'Depth'
+bin_html    <- 'Depth (m)'
+```
+
+### Pacific Islands: Map of Depth
+
+```{r mapPacific Islandsdepth, fig.cap="Map of viable depth in Pacific Islands region."}
+map_ter(ter, bin, 'limits')
+```
+
+### Pacific Islands: Plot of Uses by Depth
+
+```{r figPacific Islandsdepth, fig.cap='Area of Cumulative Ocean Use by Depth (m) for Pacific Islands region. Cumulative use are counted and summarized by Depth (m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### Pacific Islands: Table of Uses by Depth
+
+```{r tblPacific Islandsdepth}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+## West
+
+```{r West}
+ter <- 'West'
+```
+
+### West: Map of Uses
+
+```{r mapWest, fig.cap="Map of cumulative ocean use in West region."}
+map_ter(ter, 'all', 'count')
+```
+
+```{r West-depth}
+bin         <- 'depth'
+bin_cap     <- 'Depth'
+bin_html    <- 'Depth (m)'
+```
+
+### West: Map of Depth
+
+```{r mapWestdepth, fig.cap="Map of viable depth in West region."}
+map_ter(ter, bin, 'limits')
+```
+
+### West: Plot of Uses by Depth
+
+```{r figWestdepth, fig.cap='Area of Cumulative Ocean Use by Depth (m) for West region. Cumulative use are counted and summarized by Depth (m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### West: Table of Uses by Depth
+
+```{r tblWestdepth}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r West-tide}
+bin         <- 'tide'
+bin_cap     <- 'Tide'
+bin_html    <- 'Tide (W/m2)'
+```
+
+### West: Map of Tide
+
+```{r mapWesttide, fig.cap="Map of viable tide in West region."}
+map_ter(ter, bin, 'limits')
+```
+
+### West: Plot of Uses by Tide
+
+```{r figWesttide, fig.cap='Area of Cumulative Ocean Use by Tide (W/m2) for West region. Cumulative use are counted and summarized by Tide (W/m2) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### West: Table of Uses by Tide
+
+```{r tblWesttide}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r West-wave}
+bin         <- 'wave'
+bin_cap     <- 'Wave'
+bin_html    <- 'Wave (kW/m)'
+```
+
+### West: Map of Wave
+
+```{r mapWestwave, fig.cap="Map of viable wave in West region."}
+map_ter(ter, bin, 'limits')
+```
+
+### West: Plot of Uses by Wave
+
+```{r figWestwave, fig.cap='Area of Cumulative Ocean Use by Wave (kW/m) for West region. Cumulative use are counted and summarized by Wave (kW/m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### West: Table of Uses by Wave
+
+```{r tblWestwave}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```
+
+```{r West-wind}
+bin         <- 'wind'
+bin_cap     <- 'Wind'
+bin_html    <- 'Wind (m/s @ 90m)'
+```
+
+### West: Map of Wind
+
+```{r mapWestwind, fig.cap="Map of viable wind in West region."}
+map_ter(ter, bin, 'limits')
+```
+
+### West: Plot of Uses by Wind
+
+```{r figWestwind, fig.cap='Area of Cumulative Ocean Use by Wind (m/s @ 90m) for West region. Cumulative use are counted and summarized by Wind (m/s @ 90m) and area.'}
+plot_ter_bin_cnt(ter, bin)
+```
+
+### West: Table of Uses by Wind
+
+```{r tblWestwind}
+tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+```

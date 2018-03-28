@@ -1,0 +1,49 @@
+---
+title: "Ocean Uses and Marine Renewable Energy"
+author: "Ben Best"
+date: '`r format(Sys.time(), "%Y-%m-%d %H:%M")`'
+output:
+  word_document:
+    toc: yes
+    toc_depth: '4'
+    reference_docx: "~/Google Drive/projects/nrel-ecoquants/docs/nrel-uses_parts/nrel_fmt4rmd.docx"
+  html_document:
+    toc: yes
+    toc_depth: '4'
+  pdf_document:
+    fig_caption: yes
+    keep_tex: no
+    toc: yes
+    toc_depth: '4'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning=F, message=F, eval=T, echo=F, cache=F)
+
+source(here::here("scripts/setup.R"))
+devtools::load_all(here("../nrelutils"))
+
+i_tbl <<- 0
+src <- NULL
+
+territories <- eez_s05_wgcs_sf$territory
+bins <- names(limits)
+
+msg("layers")
+
+src <- c(src, glue("
+
+## Ocean Use Datasets
+
+```{{r tblLayers}}
+dt_lyrs_ter(lyr_params)
+```"))
+
+src <- glue("{src}\n")
+write_lines(src, here("docs/nrel-uses_src.Rmd"))
+res = knit_child(text = unlist(src))
+```
+
+```{r knitted_result, results="asis", eval=T}
+cat(paste(res, collapse = "\n"))
+```

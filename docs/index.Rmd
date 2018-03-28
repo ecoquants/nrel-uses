@@ -7,12 +7,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Here is the report in various formats for different purposes:
+Here are links to the latest:
 
-- [nrel-uses.**html**](./nrel-uses.html): interactive, online viewing
-- [nrel-uses.**docx**](./nrel-uses.docx): track changes with colleagues to review
-- [nrel-uses.**pdf**](./nrel-uses.pdf): final portable, static document 
-
-And here are source code and files:
-
-- [github.com/ecoquants/nrel-uses](https://github.com/ecoquants/nrel-uses)
+- report: [bit.ly/nrel-uses](http://bit.ly/nrel-uses)
+- appendix: [ecoquants.github.io/nrel-uses/nrel-uses_appendix.html](./nrel-uses_appendix.html)
+- source code: [github.com/ecoquants/nrel-uses](https://github.com/ecoquants/nrel-uses)
