@@ -12,11 +12,20 @@ select = dplyr::select
 
 # debug ----
 # https://shiny.rstudio.com/reference/shiny/latest/shiny-options.html
+# defaults:
 options(
-  shiny.sanitize.errors = F, shiny.deprecation.messages=T, shiny.autoreload=F,
-  shiny.fullstacktrace=T, shiny.stacktraceoffset=T,
+  shiny.sanitize.errors = F, shiny.deprecation.messages=F, 
+  shiny.autoreload=F,
+  shiny.fullstacktrace=F, shiny.stacktraceoffset=F,
   shiny.trace=F, shiny.testmode=F, shiny.minified=T,
   shiny.reactlog=F)
+# debug:
+# options(
+#   shiny.sanitize.errors = F, shiny.deprecation.messages=T, 
+#   shiny.autoreload=T, shiny.autoreload.pattern = glob2rx("*.R"),
+#   shiny.fullstacktrace=T, shiny.stacktraceoffset=T,
+#   shiny.trace=T, shiny.testmode=F, shiny.minified=T,
+#   shiny.reactlog=F)
 
 msg = function(txt, debug=F){
   if (debug)
@@ -25,12 +34,17 @@ msg = function(txt, debug=F){
 
 # paths ----
 # dir_wd = 'app'; if (basename(getwd())!=dir_wd) setwd(dir_wd)
-dir_data = ifelse(
-  here()=="/Users/bbest/github/nrel-uses", 
-  file.path(here(),"data/layers"),
+
+dir_data <- switch(
+  here(),
+  # BB's Mac development environments
+  "/Users/bbest/github/nrel-uses" = "/Users/bbest/github/nrel-uses/data/layers",
+  "/Users/bbest/docker-nrel/github/nrel-uses" = "/Users/bbest/docker-nrel/data",
+  # NREL server environment
   "/data")
-constraints_grd = file.path(dir_data, 'constraints_epsg3857_2km.grd')
-uses_grd        = file.path(dir_data, 'uses_epsg3857_2km.grd')
+constraints_grd <- file.path(dir_data, "constraints_epsg3857_2km.grd")
+uses_grd        <- file.path(dir_data, "uses_epsg3857_2km.grd")
+depth_gcs_grd   <- file.path(dir_data, "depth_epsg4326.grd")
 
 ter = 'West'
 
@@ -90,11 +104,20 @@ if (F){
   # 3rd: as serialized R objects
   write_rds(s_constraints, file.path(dir_data, "s_constraints.rds"))
   write_rds(s_uses, file.path(dir_data, "s_uses.rds"))
+  
+  projectRaster(raster(s_constraints, 1), crs=leaflet:::epsg4326) %>%
+    writeRaster(depth_gcs_grd)
 }
 
-s_constraints <- read_rds(file.path(dir_data, "s_constraints.rds"))
-s_uses        <- read_rds(file.path(dir_data, "s_uses.rds"))
+# s_constraints <- read_rds(file.path(dir_data, "s_constraints.rds"))
+# s_uses        <- read_rds(file.path(dir_data, "s_uses.rds"))
+s_constraints <- stack(constraints_grd)
+s_uses        <- stack(uses_grd)
 s_layers      <- stack(s_constraints, s_uses)
+
+r_depth_gcs <- raster(depth_gcs_grd)
+r_depth     <- raster(s_constraints, 1)
+bb          <- bbox(r_depth_gcs)
 
 # for (i in n_layers(list_uses)){ # i=1
 #   r = s_uses[[i]]
