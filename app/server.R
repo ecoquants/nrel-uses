@@ -4,10 +4,6 @@ shinyServer(function(input, output, session) {
   output$map <- renderLeaflet({
     
     #browser()
-    r_depth = raster(s_constraints, 1)
-    r_depth_gcs = projectRaster(r_depth, crs=leaflet:::epsg4326)
-    bb = bbox(r_depth_gcs)
-    
     leaflet(
       options = leafletOptions(attributionControl=F)) %>%
       addProviderTiles(providers$Stamen.TonerLite, group = 'B&W') %>%
