@@ -7,6 +7,7 @@ library(sp)
 library(leaflet)
 library(shiny)
 library(shinydashboard)
+library(here)
 select = dplyr::select
 
 # debug ----
@@ -24,10 +25,19 @@ msg = function(txt, debug=F){
 
 # paths ----
 # dir_wd = 'app'; if (basename(getwd())!=dir_wd) setwd(dir_wd)
-constraints_grd = 'data/constraints_epsg3857_2km.grd'
-uses_grd        = 'data/uses_epsg3857_2km.grd'
+dir_data = ifelse(
+  here()=="/Users/bbest/github/nrel-uses", 
+  file.path(here(),"data/layers"),
+  "/data")
+constraints_grd = file.path(dir_data, 'constraints_epsg3857_2km.grd')
+uses_grd        = file.path(dir_data, 'uses_epsg3857_2km.grd')
 
 ter = 'West'
+
+# project
+# raster(file.path(dir_data, 'depth/West_depth_epsg4326.tif')) %>%
+#   projectRaster(crs=leaflet:::epsg3857, res=2000, method='bilinear') %>%
+#   writeRaster(file.path(dir_data, 'depth/West_depth_epsg3857_2km.tif'))
 
 list_constraints      = list(
   `Depth`             = c(
@@ -64,18 +74,27 @@ max_weight = 1
 #msg(sprintf('pryr::mem_used(): %0.2f MB', pryr::mem_used() / (1000*1000)))
 
 if (F){
+  # 1st: create from tifs
   #setwd('~/github/nrel-uses/app')
-  s_constraints = stack(sprintf('data/%s', unlist(list_constraints))[1:2])
-  s_uses        = stack(sprintf('data/%s', unlist(list_uses)))
+  s_constraints = stack(file.path(dir_data, unlist(list_constraints))[1:2])
+  s_uses        = stack(file.path(dir_data, unlist(list_uses)))
   #s_constraints = projectRaster(s_constraints, crs=leaflet:::epsg3857)
   #s_uses        = projectRaster(s_uses, crs=leaflet:::epsg3857)
   writeRaster(s_constraints, constraints_grd, overwrite=T)
   writeRaster(s_uses, uses_grd, overwrite=T)
-}
-s_constraints = stack(constraints_grd)
-s_uses        = stack(uses_grd)
-s_layers      = stack(s_constraints, s_uses)
   
+  # 2nd: as raster stacks
+  s_constraints = stack(constraints_grd)
+  s_uses        = stack(uses_grd)
+
+  # 3rd: as serialized R objects
+  write_rds(s_constraints, file.path(dir_data, "s_constraints.rds"))
+  write_rds(s_uses, file.path(dir_data, "s_uses.rds"))
+}
+
+s_constraints <- read_rds(file.path(dir_data, "s_constraints.rds"))
+s_uses        <- read_rds(file.path(dir_data, "s_uses.rds"))
+s_layers      <- stack(s_constraints, s_uses)
 
 # for (i in n_layers(list_uses)){ # i=1
 #   r = s_uses[[i]]
