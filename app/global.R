@@ -41,7 +41,7 @@ dir_data <- switch(
   "/Users/bbest/github/nrel-uses" = "/Users/bbest/github/nrel-uses/data/layers",
   "/Users/bbest/docker-nrel/github/nrel-uses" = "/Users/bbest/docker-nrel/data",
   # NREL server environment
-  "/data")
+  "/home/ben/data")
 constraints_grd <- file.path(dir_data, "constraints_epsg3857_2km.grd")
 uses_grd        <- file.path(dir_data, "uses_epsg3857_2km.grd")
 depth_gcs_grd   <- file.path(dir_data, "depth_epsg4326.grd")
