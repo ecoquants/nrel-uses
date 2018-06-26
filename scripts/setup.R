@@ -25,6 +25,7 @@ eez_s05_gcs_geo     <- file.path(dir_lyrs, "eez/usa_ter_simplify05_gcs.geojson")
 lyr_params_csv      <- file.path(dir_data, "layer_params.csv")
 lyr_categories_xlsx <- file.path(dir_data, "categories_and_datasets.xlsx")
 lyr_fxns_r          <- file.path(dir_scripts, "layer_functions.R")
+lyr_res_areas_csv   <- file.path(dir_data, "layer_resource_areas.csv")
 
 # variables ----
 ter_atl_islands  <- c("Puerto Rico", "US Virgin Islands")

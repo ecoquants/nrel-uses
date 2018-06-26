@@ -1,0 +1,115 @@
+---
+title: "Category Tables"
+author: "Ben Best"
+date: "6/14/2018"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Gather Layers Overlapping Resource from Territories Data
+
+```{r}
+# TODO: calculate spatially Cumulative Area below Total Area across all input layers
+# TODO: sum to higher level categories, eg I:A = I:A:i + I:A:iii
+library(tidyverse)
+library(here)
+library(glue)
+library(flextable) # install.packages("flextable") # devtools::install_github("davidgohel/flextable")
+library(officer)
+library(readxl)
+
+source(here::here("scripts/setup.R"))
+devtools::load_all(here("../nrelutils"))
+
+in_docx  <- "/Users/bbest/Google Drive/projects/nrel-ecoquants/docs/nrel-uses_parts/nrel-uses_04-body-bookmarked.docx"
+out_docx <- "/Users/bbest/Google Drive/projects/nrel-ecoquants/docs/nrel-uses_parts/nrel-uses_04-body-bookmarked-tabled.docx"
+
+dir_ter      <- here("data/territories")
+lyr_cats_csv <- here("data/layer_categories.csv")
+cats_xls     <- here("data/categories_and_datasets.xlsx")
+
+# get category / layers data
+cats       <- read_xlsx(cats_xls, "categories")
+lyr_cats   <- read_csv(lyr_cats_csv) %>%
+  mutate(
+    skip_cat_tbl = if_else(is.na(skip_cat_tbl), F, skip_cat_tbl))
+categories <- lyr_cats %>% 
+  filter(skip_cat_tbl == FALSE) %>%
+  distinct(category) %>%
+  pull(category) %>% sort()
+bins <- names(nrel_limits)
+
+doc <- read_docx(in_docx)
+
+for (cat in categories){ # cat <- categories[2] # cat <- categories[1] # "Governance: Marine Protected Areas (MPAs)"
+
+  cat_bkmrk <- cats %>%
+    filter(key == cat) %>%
+    pull(bookmark)
+  
+  doc <- cursor_bookmark(doc, cat_bkmrk)
+
+  for (bin in bins){ # bin = bins[1] # bin = "wave"
+    # devtools::load_all(here("../nrelutils"))
+    doc <- doc %>%
+      body_add_flextable(table_flextable_cat_bin(cat, bin)) %>%
+      insert_table_caption(table_caption_cat_bin(cat, bin)) %>%
+      cursor_forward()
+    # TODO: add space
+  }
+}
+print(doc, out_docx)
+# NEXT: run formatNRELbodybookmarkedtabled() in Word Tools > Macro > VB
+```
+
+# insert into docx
+
+```{r old}
+docx <- "/Users/bbest/Google Drive/projects/nrel-ecoquants/docs/nrel-uses_parts/nrel-uses_04-body-test.docx"
+read_docx(docx) %>% styles_info()
+
+
+read_docx(docx) %>%
+  # move to table
+  cursor_bookmark("tbl_gov-mpa_depth") %>%
+  cursor_bookmark("tbl_gov-mpa_") %>%
+  cursor_bookmark("tbl_gov-mpa_depth") %>%
+  cursor_bookmark("tbl_gov-mpa_depth") %>%
+  body_replace_text_at_bkm("gov_mpa", "body_replace_text_at_bkm") %>%
+  body_replace_all_text
+  print(target=docx)
+  #cursor_forward() %>%
+  #body_remove() %>% # remove caption
+  # replace table
+  #body_add_table(iris[21:25,], style = "table_template", pos = "on") %>%
+  body_add_flextable(ft) %>%
+  insert_table_caption("Example caption.") %>% 
+  print(target=docx)
+
+# TODO: VB Sub tbl_autofit(): Selection.Tables(1).AutoFitBehavior (wdAutoFitContent) 
+browseURL(docx)
+
+```
+
+
+```{r other, eval=F}
+territories <- eez_s05_wgcs_sf$territory
+
+# tbl_blsp <- ter_bin_lyr_smry_plus(ter, bin, lyr_params, lyr_categories)
+# print_tbl_ter_bin_lyr_smry_plus(tbl_blsp)
+
+ter <- "West"
+bin <- "depth"
+ter_info <- get_ter_info(ter)
+ter_bin_lyr_csv <- ter_info[[bin]]$count$layers_csv
+tbl_bls <- suppressMessages(read_csv(ter_bin_lyr_csv, trim_ws=F))
+```
+
+
+
+

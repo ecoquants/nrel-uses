@@ -3,8 +3,9 @@ library(yaml)
 library(here)
 library(glue)
 
-dir_layers     <- here("data/layers") 
-lyr_cats_csv   <- here("data/layer_categories.csv") 
+dir_layers        <- here("data/layers") 
+lyr_cats_csv      <- here("data/layer_categories.csv") 
+cats_with_lyr_csv <- here("data/categories_with_layer.csv") 
 yml_exceptions <- c()
 
 ymls <- list.files(dir_layers, ".*\\.yml$", recursive = T, full.names = T)
@@ -53,3 +54,9 @@ miss_cats <- lyr_cats %>%
     n_layers = n())
 
 miss_cats
+
+read_csv(lyr_cats_csv) %>%
+  group_by(category) %>%
+  summarize(
+    n_layers = n()) %>%
+  write_csv(cats_with_lyr_csv)

@@ -1,0 +1,13 @@
+Source,Dataset,Alaska,Atlantic Islands,East,Great Lakes,Gulf of Mexico,Hawaii,Pacific Islands,West
+GEBCO,Depth (m),✔,✔,✔,✔,✔,✔,✔,✔
+Marine Cadastre,Active Oil & Gas Leases,✔,,,,✔,,,✔
+Marine Cadastre,Aquaculture,✔,,✔,,✔,✔,,✔
+Marine Cadastre,Essential Fish Habitat,✔,✔,✔,,✔,,,✔
+Marine Cadastre,Marine Protected Areas,✔,✔,✔,✔,✔,✔,✔,✔
+Marine Cadastre,Shipping Lanes,✔,,✔,,✔,,,✔
+NOAA Ocean Uses,Ocean Use Atlas for California,,,,,,,,✔
+NOAA Ocean Uses,Ocean Use Atlas for Hawaii,,,,,,✔,,
+NOAA Ocean Uses,Ocean Use Atlas for Oregon & Washington,,,,,,,,✔
+NREL,Tide (W/m2),✔,✔,✔,,✔,,,✔
+NREL,Wave (kW/m),✔,✔,✔,,✔,✔,,✔
+NREL,Wind (m/s @ 90m),,,✔,✔,✔,✔,,✔

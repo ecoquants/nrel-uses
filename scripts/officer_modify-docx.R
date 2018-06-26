@@ -41,7 +41,8 @@ insert_table_caption <- function (x, text="", style = NULL, depth){
     body_add_par(value = text, style="table title") %>% 
     slip_in_text(str = ". ", style = style, pos = "before") %>%
     slip_in_seqfield(
-      str = "SEQ table \\* Arabic \\s 1 \\* MERGEFORMAT", 
+      #str = "SEQ table \\* Arabic \\s 1 \\* MERGEFORMAT", 
+      str = " SEQ Table \\* ARABIC ", 
       style = style, pos = "before") %>%
     slip_in_text(str = "Table ", style = style, pos = "before")
 }
