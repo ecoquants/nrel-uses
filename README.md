@@ -12,13 +12,13 @@ The [Shiny](http://shiny.rstudio.com/) application (ie "app") provides an intera
 
 [![](app/images/app_screen.png)](https://ecoquants.shinyapps.io/nrel-uses/)
 
-### App Online
+### Running the App Online
 
 You can find this app online here:
 
 [ecoquants.shiny.io/nrel-uses](https://ecoquants.shinyapps.io/nrel-uses/)
 
-### App Locally with R
+### Running the App Locally with R
 
 You can also directly run the app from a local desktop instance of the [R]() statistical programming language as long as you already have the libraries installed that are listed at the top of the [global.R](https://github.com/ecoquants/nrel-uses/blob/master/app/global.R#L1-L9) file (e.g. `install.packages("shiny")`).
 
