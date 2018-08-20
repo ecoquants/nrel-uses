@@ -8,7 +8,7 @@ Here are other related Github repositories (in order from oldest to newest):
 
 ## Interactive App
 
-The [Shiny](http://shiny.rstudio.com/) application (ie "app") provides an interactive web interface to data layers, particularly for implementing alternative weights and sliders to ocean use layers for identifying areas of conflict.
+The [Shiny](http://shiny.rstudio.com/) application (code in [app](https://github.com/ecoquants/nrel-uses/tree/master/app) folder) provides an interactive web interface to data layers, particularly for implementing alternative weights and sliders to ocean use layers for identifying areas of conflict.
 
 [![](app/images/app_screen.png)](https://ecoquants.shinyapps.io/nrel-uses/)
 
