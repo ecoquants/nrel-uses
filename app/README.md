@@ -8,7 +8,7 @@ The [Shiny](http://shiny.rstudio.com/) app provides an interactive web interface
 
 You can find this app online here:
 
-[ecoquants.shiny.io/nrel-uses](https://ecoquants.shinyapps.io/nrel-uses/)
+[ecoquants.shinyapps.io/nrel-uses](https://ecoquants.shinyapps.io/nrel-uses/)
 
 ## Locally with R
 
