@@ -1,5 +1,9 @@
 # nrel-uses
-Competing ocean uses work with National Renewable Energy Lab (NREL)
+Competing ocean uses work with National Renewable Energy Lab (NREL):
+
+- [**report**](https://bit.ly/nrel-uses)
+- [**appendix**](https://ecoquants.github.io/nrel-uses/nrel-uses_appendix.html)
+- [**source code**](https://github.com/ecoquants/nrel-uses)
 
 Here are other related Github repositories (in order from oldest to newest):
 * [**nrelutils**](https://github.com/ecoquants/nrelutils): R package to facilitate nrel-uses analysis
